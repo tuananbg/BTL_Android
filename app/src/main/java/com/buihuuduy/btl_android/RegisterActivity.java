@@ -1,82 +1,115 @@
 package com.buihuuduy.btl_android;
 
-import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
-import com.buihuuduy.btl_android.common.ShowDialog;
 import com.buihuuduy.btl_android.entity.UserEntity;
+import com.buihuuduy.btl_android.common.ShowDialog;
 
-public class RegisterActivity extends AppCompatActivity
-{
-    DataHandler databaseHelper;
-    EditText editTextEmail, editTextFullName, editTextPassword;
-    Button btnRegister;
+public class RegisterActivity extends AppCompatActivity {
+
+    private EditText editTextEmail, editTextFullName, editTextPassword;
+    private Button btnRegister, btnExit;
+    private DataHandler databaseHelper;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_register);
 
-        databaseHelper = new DataHandler(this);
-        editTextEmail = (EditText) findViewById(R.id.editTextEmail);
-        editTextFullName = (EditText) findViewById(R.id.editTextUsername);
-        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
-        btnRegister = (Button) findViewById(R.id.btnRegister); btnRegister.setOnClickListener(new ButtonEvent());
+        // Initialize views
+        initializeViews();
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        // Create an instance of DataHandler for database operations
+        databaseHelper = new DataHandler(this);
+
+        // Set button click listeners
+        setButtonListeners();
     }
 
-    private class ButtonEvent implements View.OnClickListener
-    {
+    private void initializeViews() {
+        editTextEmail = findViewById(R.id.editTextEmail);
+        editTextFullName = findViewById(R.id.editTextUsername);
+        editTextPassword = findViewById(R.id.editTextPassword);
+        btnRegister = findViewById(R.id.btnRegister);
+        btnExit = findViewById(R.id.btnExit);
+    }
+
+    private void setButtonListeners() {
+        btnRegister.setOnClickListener(new ButtonEvent());
+        btnExit.setOnClickListener(new ButtonEvent());
+    }
+
+    private class ButtonEvent implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            if(view.getId() == R.id.btnRegister) {
-                solveBtnRegisterEvent();
+            if (view.getId() == R.id.btnRegister) {
+                handleRegister();
+            } else if (view.getId() == R.id.btnExit) {
+                finish(); // Close register activity
             }
         }
     }
 
-    private void solveBtnRegisterEvent()
-    {
+    private void handleRegister() {
         String email = editTextEmail.getText().toString().trim();
         String fullName = editTextFullName.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
-        if(TextUtils.isEmpty(email) || TextUtils.isEmpty(fullName) || TextUtils.isEmpty(password)) {
-            ShowDialog.showAlertDialog(this, "Thông báo", "Vui lòng nhập đủ thông tin");
-            return;
-        }
-        if(databaseHelper.checkEmailExist(email)) {
-            ShowDialog.showAlertDialog(this, "Thông báo", "Email đã tồn tại");
-            return;
+        // Validate inputs
+        if (!validateInputs(email, fullName, password)) {
+            return;  // Validation failed, exit early
         }
 
-        UserEntity userEntity = new UserEntity(email, fullName, password);
+        // Check if email already exists using the updated method
+        if (isEmailExists(email)) {
+            return;  // Email exists, exit early
+        }
 
-        boolean isInserted = databaseHelper.registerUser(userEntity);
-        if (isInserted) {
-            ShowDialog.showToast(RegisterActivity.this, "Đăng ký thành công!");
+        // Proceed with registration
+        UserEntity newUser = new UserEntity(email, fullName, password, 0); // 0 means normal user
+        if (registerNewUser(newUser)) {
+            onRegisterSuccess();
         } else {
-            ShowDialog.showToast(RegisterActivity.this, "Đăng ký thất bại");
+            onRegisterFailure();
         }
     }
 
+    private boolean validateInputs(String email, String fullName, String password) {
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(fullName) || TextUtils.isEmpty(password)) {
+            ShowDialog.showAlertDialog(this, "Thông báo", "Vui lòng nhập đủ thông tin");
+            return false;  // Validation failed
+        }
+        return true;  // Validation passed
+    }
+
+    private boolean isEmailExists(String email) {
+        // Get writable database to pass it to the checkEmailExist method
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        boolean emailExists = databaseHelper.checkEmailExist(db, email);
+        if (emailExists) {
+            ShowDialog.showAlertDialog(this, "Thông báo", "Email đã tồn tại");
+        }
+        return emailExists;  // Return true if email exists, false otherwise
+    }
+
+    private boolean registerNewUser(UserEntity newUser) {
+        return databaseHelper.registerUser(newUser); // Attempt to register the user
+    }
+
+    private void onRegisterSuccess() {
+        ShowDialog.showToast(RegisterActivity.this, "Đăng ký thành công!");
+        finish();  // Close register activity on success
+    }
+
+    private void onRegisterFailure() {
+        ShowDialog.showAlertDialog(this, "Thông báo", "Đăng ký không thành công");
+    }
 }
