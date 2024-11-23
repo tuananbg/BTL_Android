@@ -18,4 +18,6 @@
     <color name="primary">#2196F3</color> <!-- Xanh dương nhạt -->
     <color name="primary_dark">#1565C0</color> <!-- Xanh dương đậm -->
     <color name="button_text">#FFFFFF</color>
+
+    <color name="background_app">#f6f6f6</color>
 </resources>
