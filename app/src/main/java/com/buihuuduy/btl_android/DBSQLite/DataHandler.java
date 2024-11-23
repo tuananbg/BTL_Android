@@ -7,7 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.buihuuduy.btl_android.entity.BookEntity;
 import com.buihuuduy.btl_android.entity.UserEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataHandler extends SQLiteOpenHelper {
 
@@ -15,6 +19,7 @@ public class DataHandler extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "book_management_db.db";
 
     private static final String TABLE_USER = "user";
+    private static final String TABLE_BOOK = "book";
 
     // SQL query to create the user table
     private static final String CREATE_TABLE_USER =
@@ -25,6 +30,21 @@ public class DataHandler extends SQLiteOpenHelper {
                     "password VARCHAR(255), " +
                     "isAdmin INTEGER" +
                     ");";
+
+    private static final String CREATE_TABLE_BOOK =
+            "create table " + TABLE_BOOK + " (" +
+                    "id integer primary key autoincrement, " +
+                    "name nvarchar(100), " +
+                    "description text, " +
+                    "price real, " +
+                    "author nvarchar(30)" +
+                    ");";
+
+    private static final String INIT_BOOK_LIST =
+            "INSERT INTO Book (name, description, price, author) VALUES " +
+            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 'Hoàng'), " +
+            "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 'Quốc'), " +
+            "('Anh', 'Hello World', 30000, 'Việt');";
 
     // Constructor
     public DataHandler(Context context) {
@@ -37,6 +57,9 @@ public class DataHandler extends SQLiteOpenHelper {
         try {
             db.execSQL(CREATE_TABLE_USER);  // Tạo bảng user
             createDefaultAccounts(db); // Chèn tài khoản mặc định
+
+            db.execSQL(CREATE_TABLE_BOOK);
+            db.execSQL(INIT_BOOK_LIST);
         } catch (Exception e) {
             Log.e("DataHandler", "Error creating table: " + e.getMessage());
         }
@@ -44,8 +67,9 @@ public class DataHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
-        onCreate(db);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOOK);
+            onCreate(db); // Tạo lại bảng mới
     }
 
     // Check if email exists in the database
@@ -151,5 +175,40 @@ public class DataHandler extends SQLiteOpenHelper {
         if (!checkEmailExist(db, "user@example.com")) {
             insertUser(db); // Thêm tài khoản user nếu chưa tồn tại
         }
+    }
+
+    public List<BookEntity> getAllBooks() {
+        List<BookEntity> bookList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT * FROM Book";
+        Cursor cursor = db.rawQuery(query, null);
+        int x = 0;
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int idIndex = cursor.getColumnIndex("id");
+            int nameIndex = cursor.getColumnIndex("name");
+            int descriptionIndex = cursor.getColumnIndex("description");
+            int priceIndex = cursor.getColumnIndex("price");
+            int authorIndex = cursor.getColumnIndex("author");
+
+            if (idIndex != -1 && nameIndex != -1 && descriptionIndex != -1 && priceIndex != -1 && authorIndex != -1) {
+                do {
+                    int id = cursor.getInt(idIndex);
+                    String name = cursor.getString(nameIndex);
+                    String description = cursor.getString(descriptionIndex);
+                    double price = cursor.getDouble(priceIndex);
+                    String author = cursor.getString(authorIndex);
+
+                    bookList.add(new BookEntity(id, name, description, price, author));
+                } while (cursor.moveToNext());
+            } else {
+                Log.e("Database", "Column not found in cursor");
+            }
+        }
+        cursor.close();
+        db.close();
+
+        return bookList;
     }
 }

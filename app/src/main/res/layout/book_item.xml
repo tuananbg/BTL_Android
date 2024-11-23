@@ -1,0 +1,74 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="#FFFFFF"
+    android:padding="16dp"
+    android:elevation="4dp"
+    android:layout_marginBottom="16dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginStart="8dp">
+
+    <ImageView
+        android:id="@+id/bookItemImage"
+        android:layout_width="80dp"
+        android:layout_height="120dp"
+        android:src="@drawable/logo"
+        android:scaleType="centerCrop"
+        android:layout_marginEnd="16dp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/bookItemName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BOOK NAME"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/bookItemDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:layout_marginTop="4dp"
+            android:textColor="#000000"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/bookItemPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Price"
+            android:layout_marginTop="4dp"
+            android:textColor="#000000"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/bookItemAuthor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Author"
+            android:layout_marginTop="4dp"
+            android:textColor="#000000"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/bookItemBtnShowDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show Detail"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#4285F4"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:paddingHorizontal="16dp" />
+    </LinearLayout>
+</LinearLayout>
