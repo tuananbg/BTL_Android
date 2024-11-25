@@ -7,10 +7,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
 import com.buihuuduy.btl_android.entity.BookEntity;
 import com.buihuuduy.btl_android.entity.UserEntity;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,31 +19,47 @@ public class DataHandler extends SQLiteOpenHelper {
 
     private static final String TABLE_USER = "user";
     private static final String TABLE_BOOK = "book";
+    private static final String TABLE_CATEGORY = "category";
 
-    // SQL query to create the user table
+    // SQL query to create tables
     private static final String CREATE_TABLE_USER =
             "CREATE TABLE " + TABLE_USER + " (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "email VARCHAR(255) UNIQUE, " +
-                    "full_name VARCHAR(255), " +
+                    "full_name NVARCHAR(255), " +
                     "password VARCHAR(255), " +
                     "isAdmin INTEGER" +
                     ");";
 
     private static final String CREATE_TABLE_BOOK =
             "create table " + TABLE_BOOK + " (" +
-                    "id integer primary key autoincrement, " +
-                    "name nvarchar(100), " +
-                    "description text, " +
-                    "price real, " +
-                    "author nvarchar(30)" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "name NVARCHAR(255), " +
+                    "description TEXT, " +
+                    "content TEXT, " +
+                    "price INTEGER, " +
+                    "status TINYINT(1), " +
+                    "is_free TINYINT(1), " +
+                    "user_id INTEGER, " +
+                    "category_id INTEGER" +
                     ");";
 
+    private static final String CREATE_TABLE_CATEGORY =
+            "create table " + TABLE_CATEGORY + " (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "name NVARCHAR(255)" +
+                    ");";
+
+    private static final String INIT_USER =
+            "INSERT INTO user (email, full_name, password, isAdmin) VALUES " +
+            "('user1', 'User 1', '1234', 0), " +
+            "('admin1', 'Admin 1', '1234', 1);";
+
     private static final String INIT_BOOK_LIST =
-            "INSERT INTO Book (name, description, price, author) VALUES " +
-            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 'Hoàng'), " +
-            "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 'Quốc'), " +
-            "('Anh', 'Hello World', 30000, 'Việt');";
+            "INSERT INTO book (name, description, price, content) VALUES " +
+            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 'Hằng đẳng thức'), " +
+            "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 'Mò kim đáy bể'), " +
+            "('Anh', 'Hello World', 30000, 'Android Studio');";
 
     // Constructor
     public DataHandler(Context context) {
@@ -56,10 +70,10 @@ public class DataHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         try {
-            db.execSQL(CREATE_TABLE_USER);  // Tạo bảng user
-            createDefaultAccounts(db); // Chèn tài khoản mặc định
-
+            db.execSQL(CREATE_TABLE_USER);
             db.execSQL(CREATE_TABLE_BOOK);
+            db.execSQL(CREATE_TABLE_CATEGORY);
+            db.execSQL(INIT_USER);
             db.execSQL(INIT_BOOK_LIST);
         } catch (Exception e) {
             Log.e("DataHandler", "Error creating table: " + e.getMessage());
@@ -141,39 +155,6 @@ public class DataHandler extends SQLiteOpenHelper {
         db.close();
 
         return rowsUpdated > 0;
-    }
-
-    // Insert admin account into the database
-    private boolean insertAdmin(SQLiteDatabase db) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("email", "admin@example.com");
-        contentValues.put("full_name", "Admin User");
-        contentValues.put("password", "admin123");
-        contentValues.put("isAdmin", 1); // 1 = admin
-        long result = db.insert(TABLE_USER, null, contentValues);
-        return result != -1;
-    }
-
-    // Insert user account into the database
-    private boolean insertUser(SQLiteDatabase db) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("email", "user@example.com");
-        contentValues.put("full_name", "Regular User");
-        contentValues.put("password", "user123");
-        contentValues.put("isAdmin", 0); // 0 = user
-        long result = db.insert(TABLE_USER, null, contentValues);
-        return result != -1;
-    }
-
-    // Create default user and admin account if they don't exist
-    private void createDefaultAccounts(SQLiteDatabase db) {
-        if (!checkEmailExist(db, "admin@example.com")) {
-            insertAdmin(db); // Thêm tài khoản admin nếu chưa tồn tại
-        }
-
-        if (!checkEmailExist(db, "user@example.com")) {
-            insertUser(db); // Thêm tài khoản user nếu chưa tồn tại
-        }
     }
 
     public List<BookEntity> getAllBooks() {

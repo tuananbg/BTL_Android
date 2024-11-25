@@ -1,8 +1,10 @@
-package com.buihuuduy.btl_android;
+package com.buihuuduy.btl_android.activity;
 
 import android.os.Bundle;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.buihuuduy.btl_android.R;
 
 public class AdminActivity extends AppCompatActivity {
     @Override

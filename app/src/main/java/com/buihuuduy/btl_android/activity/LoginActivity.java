@@ -1,4 +1,4 @@
-package com.buihuuduy.btl_android;
+package com.buihuuduy.btl_android.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
+import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.common.ShowDialog;
 
 public class LoginActivity extends AppCompatActivity {
@@ -73,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
             // User login
             ShowDialog.showToast(LoginActivity.this, "Đăng nhập thành công!");
 
-            Intent intent = new Intent(LoginActivity.this, HomePageActivity.class);
+            Intent intent = new Intent(LoginActivity.this, HomeSidebarActivity.class);
             startActivity(intent);
             finish();  // Close the login activity
         } else {

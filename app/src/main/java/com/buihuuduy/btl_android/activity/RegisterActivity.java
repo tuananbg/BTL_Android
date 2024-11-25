@@ -1,4 +1,4 @@
-package com.buihuuduy.btl_android;
+package com.buihuuduy.btl_android.activity;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
+import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.entity.UserEntity;
 import com.buihuuduy.btl_android.common.ShowDialog;
 
