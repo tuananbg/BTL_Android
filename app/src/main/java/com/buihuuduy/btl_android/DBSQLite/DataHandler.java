@@ -39,9 +39,10 @@ public class DataHandler extends SQLiteOpenHelper {
                     "content TEXT, " +
                     "price INTEGER, " +
                     "status TINYINT(1), " +
-                    "is_free TINYINT(1), " +
                     "user_id INTEGER, " +
-                    "category_id INTEGER" +
+                    "category_id INTEGER, " +
+                    "created_at DATE, " +
+                    "image_path TEXT" +
                     ");";
 
     private static final String CREATE_TABLE_CATEGORY =
@@ -56,15 +57,14 @@ public class DataHandler extends SQLiteOpenHelper {
             "('admin1', 'Admin 1', '1234', 1);";
 
     private static final String INIT_BOOK_LIST =
-            "INSERT INTO book (name, description, price, content) VALUES " +
-            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 'Hằng đẳng thức'), " +
-            "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 'Mò kim đáy bể'), " +
-            "('Anh', 'Hello World', 30000, 'Android Studio');";
+            "INSERT INTO book (name, description, price, content, image_path) VALUES " +
+            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 'Hằng đẳng thức', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg'), " +
+            "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 'Mò kim đáy bể', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg'), " +
+            "('Anh', 'Hello World', 30000, 'Android Studio', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg');";
 
     // Constructor
     public DataHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        // Create default accounts when database is created
     }
 
     @Override
@@ -144,51 +144,18 @@ public class DataHandler extends SQLiteOpenHelper {
         return user;
     }
 
-    // Update user details (e.g., password)
-    public boolean updateUser(UserEntity userEntity) {
+    public long shareBook(BookEntity bookEntity) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("full_name", userEntity.getFullName());
-        values.put("password", userEntity.getPassword());
-
-        int rowsUpdated = db.update(TABLE_USER, values, "email = ?", new String[]{userEntity.getEmail()});
-        db.close();
-
-        return rowsUpdated > 0;
+        values.put("name", bookEntity.getName());
+        values.put("description", bookEntity.getDescription());
+        values.put("content", bookEntity.getContent());
+        values.put("image_path", bookEntity.getImagePath());
+        return db.insert(TABLE_BOOK, null, values);
     }
 
-    public List<BookEntity> getAllBooks() {
-        List<BookEntity> bookList = new ArrayList<>();
+    public Cursor getAllBooks() {
         SQLiteDatabase db = this.getReadableDatabase();
-
-        String query = "SELECT * FROM Book";
-        Cursor cursor = db.rawQuery(query, null);
-        int x = 0;
-
-        if (cursor != null && cursor.moveToFirst()) {
-            int idIndex = cursor.getColumnIndex("id");
-            int nameIndex = cursor.getColumnIndex("name");
-            int descriptionIndex = cursor.getColumnIndex("description");
-            int priceIndex = cursor.getColumnIndex("price");
-            int authorIndex = cursor.getColumnIndex("author");
-
-            if (idIndex != -1 && nameIndex != -1 && descriptionIndex != -1 && priceIndex != -1 && authorIndex != -1) {
-                do {
-                    int id = cursor.getInt(idIndex);
-                    String name = cursor.getString(nameIndex);
-                    String description = cursor.getString(descriptionIndex);
-                    double price = cursor.getDouble(priceIndex);
-                    String author = cursor.getString(authorIndex);
-
-                    bookList.add(new BookEntity(id, name, description, price, author));
-                } while (cursor.moveToNext());
-            } else {
-                Log.e("Database", "Column not found in cursor");
-            }
-        }
-        cursor.close();
-        db.close();
-
-        return bookList;
+        return db.query(TABLE_BOOK, null, null, null, null, null, null);
     }
 }

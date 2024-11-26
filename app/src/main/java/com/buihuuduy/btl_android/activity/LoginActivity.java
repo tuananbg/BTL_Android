@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
             // User login
             ShowDialog.showToast(LoginActivity.this, "Đăng nhập thành công!");
 
-            Intent intent = new Intent(LoginActivity.this, HomeSidebarActivity.class);
+            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
             startActivity(intent);
             finish();  // Close the login activity
         } else {

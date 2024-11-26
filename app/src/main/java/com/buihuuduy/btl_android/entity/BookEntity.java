@@ -1,25 +1,39 @@
 package com.buihuuduy.btl_android.entity;
 
-public class BookEntity {
-    private int id;
+import java.time.LocalDate;
+
+public class BookEntity
+{
+    private Integer id;
     private String name;
     private String description;
-    private double price;
-    private String author;
+    private String content;
+    private Integer price;
+    private Integer status;
+    private Integer categoryId;
+    private Integer userId;
+    private LocalDate createdAt;
+    private String imagePath;
 
-    public BookEntity(int id, String name, String description, double price, String author) {
-        this.id = id;
+    public BookEntity( String name, String description, String content, Integer price, Integer status, Integer categoryId, Integer userId, LocalDate createdAt, String imagePath) {
         this.name = name;
         this.description = description;
+        this.content = content;
         this.price = price;
-        this.author = author;
+        this.status = status;
+        this.categoryId = categoryId;
+        this.userId = userId;
+        this.createdAt = createdAt;
+        this.imagePath = imagePath;
     }
 
-    public int getId() {
+    public BookEntity(){}
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -39,19 +53,59 @@ public class BookEntity {
         this.description = description;
     }
 
-    public double getPrice() {
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
-    public String getAuthor() {
-        return author;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

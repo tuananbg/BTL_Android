@@ -10,11 +10,16 @@
     tools:openDrawer="start">
 <!--    tools:context=".UserHomePageActivity"-->
 
-
-    <Toolbar
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#BCBCBC">
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:gravity="center"
+        android:elevation="4dp"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/bg_rounded_shadow">
+
         <ImageButton
             android:id="@+id/btnToggle"
             android:layout_width="24dp"
@@ -23,15 +28,17 @@
             android:contentDescription="Menu" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="LATED BOOKS"
+            android:layout_weight="1"
             android:layout_gravity="center"
-            android:layout_marginStart="16dp"
-            android:textColor="#000000"
+            android:gravity="center"
+            android:text="Share Books"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:textSize="16sp" />
-    </Toolbar>
+            android:textColor="@color/black"/>
+    </LinearLayout>
+
 
     <ListView
         android:id="@+id/homePageListViewBooks"

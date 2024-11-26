@@ -1,6 +1,7 @@
 package com.buihuuduy.btl_android.activity;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,17 +15,24 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
+import com.buihuuduy.btl_android.adapter.BookAdapter;
 import com.buihuuduy.btl_android.common.ShowDialog;
+import com.buihuuduy.btl_android.entity.BookEntity;
 import com.google.android.material.navigation.NavigationView;
 
-public class HomeSidebarActivity extends AppCompatActivity
+import java.util.ArrayList;
+import java.util.List;
+
+public class HomeActivity extends AppCompatActivity
 {
     DrawerLayout drawerLayout;
     ImageButton btnToggle;
     NavigationView navigationView;
-    ListView listViewBook;
-    DataHandler dataHandler;
-    Adapter bookAdapter;
+
+    private DataHandler dataHandler;
+    private ListView listView;
+    private BookAdapter adapter;
+    private List<BookEntity> bookList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +44,11 @@ public class HomeSidebarActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         dataHandler = new DataHandler(this);
 
+        listView = findViewById(R.id.homePageListViewBooks);
+        bookList = new ArrayList<>();
+        adapter = new BookAdapter(bookList, dataHandler, this);
+        listView.setAdapter(adapter);
+
         btnToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -43,24 +56,47 @@ public class HomeSidebarActivity extends AppCompatActivity
             }
         });
 
+        loadBooksFromDatabase();
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
                 if (itemId == R.id.nav_home) {
-                    ShowDialog.showToast(HomeSidebarActivity.this, "Home menu clicked");
+                    ShowDialog.showToast(HomeActivity.this, "Home menu clicked");
                 } else if (itemId == R.id.nav_document) {
-                    ShowDialog.showToast(HomeSidebarActivity.this, "Document menu clicked");
+                    ShowDialog.showToast(HomeActivity.this, "Document menu clicked");
                 } else if (itemId == R.id.nav_share) {
-                    ShowDialog.showToast(HomeSidebarActivity.this, "share menu clicked");
-                } else if (itemId == R.id.nav_sale) {
-                    Intent intent = new Intent(HomeSidebarActivity.this, TestMainActivity.class);
+                    Intent intent = new Intent(HomeActivity.this, ShareBookActivity.class);
                     startActivity(intent);
                     finish();
+                } else if (itemId == R.id.nav_sale) {
+                    ShowDialog.showToast(HomeActivity.this, "Sale menu clicked");
                 }
                 drawerLayout.close();
                 return false;
             }
         });
+    }
+
+    private void loadBooksFromDatabase() {
+        bookList.clear();
+        Cursor cursor = dataHandler.getAllBooks();
+        if (cursor.moveToFirst()) {
+            do {
+                String bookName = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                String bookDescription = cursor.getString(cursor.getColumnIndexOrThrow("description"));
+                String imagePath = cursor.getString(cursor.getColumnIndexOrThrow("image_path"));
+
+                BookEntity bookEntity = new BookEntity();
+                bookEntity.setName(bookName);
+                bookEntity.setDescription(bookDescription);
+                bookEntity.setImagePath(imagePath);
+
+                bookList.add(bookEntity);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        adapter.notifyDataSetChanged();
     }
 }

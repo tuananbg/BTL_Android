@@ -1,10 +1,12 @@
 package com.buihuuduy.btl_android.entity;
 
-public class UserEntity {
+public class UserEntity
+{
+    private Integer id;
     private String email;
     private String fullName;
     private String password;
-    private int isAdmin; // 1 for Admin, 0 for User
+    private int isAdmin;
 
     public UserEntity(String email, String fullName, String password, int isAdmin) {
         this.email = email;
@@ -13,7 +15,17 @@ public class UserEntity {
         this.isAdmin = isAdmin;
     }
 
-    // Getters and Setters
+    public UserEntity() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getEmail() {
         return email;
     }
