@@ -18,7 +18,7 @@ import android.view.LayoutInflater;
 
 public class BookAdapter extends BaseAdapter
 {
-    TextView textViewBookName, textViewDescription, textViewContent;
+    TextView textViewBookName, textViewDescription, textViewAuthor;
     ImageView imageViewBook;
     Button btnShowDetail;
 
@@ -58,11 +58,13 @@ public class BookAdapter extends BaseAdapter
         textViewBookName = convertView.findViewById(R.id.bookItemName);
         textViewDescription = convertView.findViewById(R.id.bookItemDescription);
         imageViewBook = convertView.findViewById(R.id.bookItemImage);
+        textViewAuthor = convertView.findViewById(R.id.bookItemAuthor);
 
         BookEntity book = bookList.get(position);
 
         textViewBookName.setText(book.getName());
         textViewDescription.setText(book.getDescription());
+        textViewAuthor.setText(book.getUserName());
 
         File imgFile = new File(book.getImagePath());
         if (imgFile.exists()) {

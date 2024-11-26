@@ -2,7 +2,10 @@ package com.buihuuduy.btl_android.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,34 +19,36 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.common.ShowDialog;
 import com.buihuuduy.btl_android.entity.BookEntity;
 import com.google.android.material.navigation.NavigationView;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class ShareBookActivity extends AppCompatActivity
 {
-    DrawerLayout drawerLayout;
-    ImageButton btnToggle;
-    NavigationView navigationView;
+    private DrawerLayout drawerLayout;
+    private ImageButton btnToggle;
+    private NavigationView navigationView;
 
-    EditText editTextBookName, editTextBookDescription, editTextBookContent;
-    Button btnShareBook;
-    ImageButton imageButtonBookImage;
+    private EditText editTextBookName, editTextBookDescription, editTextBookContent;
+    private Button btnShareBook;
+    private ImageButton imageButtonBookImage;
     private static final int PICK_IMAGE_REQUEST = 1;
     private DataHandler dataHandler;
     private String selectedImagePath;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sharebook_sidebar);
+
+        SharedPreferences sharedPreferences = this.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        String email = sharedPreferences.getString("email", "null");
 
         drawerLayout = findViewById(R.id.sidebar_layout);
         btnToggle = findViewById(R.id.btnToggle);
@@ -69,13 +74,11 @@ public class ShareBookActivity extends AppCompatActivity
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
                 if (itemId == R.id.nav_home) {
-                    ShowDialog.showToast(ShareBookActivity.this, "Home menu clicked");
-                } else if (itemId == R.id.nav_document) {
-                    ShowDialog.showToast(ShareBookActivity.this, "Document menu clicked");
-                } else if (itemId == R.id.nav_share) {
-                    Intent intent = new Intent(ShareBookActivity.this, ShareBookActivity.class);
+                    Intent intent = new Intent(ShareBookActivity.this, HomeActivity.class);
                     startActivity(intent);
                     finish();
+                } else if (itemId == R.id.nav_document) {
+                    ShowDialog.showToast(ShareBookActivity.this, "Document menu clicked");
                 } else if (itemId == R.id.nav_sale) {
                     ShowDialog.showToast(ShareBookActivity.this, "Sale menu clicked");
                 }
@@ -98,10 +101,11 @@ public class ShareBookActivity extends AppCompatActivity
                 bookEntity.setDescription(bookDescription);
                 bookEntity.setContent(bookContent);
                 bookEntity.setImagePath(imagePath);
+                bookEntity.setUserId(dataHandler.getUserByEmail(email).getId());
 
                 long result = dataHandler.shareBook(bookEntity);
                 if (result != -1) {
-                    ShowDialog.showToast(ShareBookActivity.this, "Thêm sách thành công!");
+                    ShowDialog.showToast(ShareBookActivity.this, "Chia sẻ sách thành công!");
                 } else {
                     ShowDialog.showToast(ShareBookActivity.this, "Có lỗi xảy ra!");
                 }

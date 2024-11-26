@@ -6,15 +6,28 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
             android:title="Trang chủ" />
+
         <item
             android:id="@+id/nav_document"
+            android:icon="@drawable/ic_book"
             android:title="Sách của tôi" />
+
         <item
             android:id="@+id/nav_share"
-            android:title="Chia sẻ tài liệu" />
+            android:icon="@drawable/ic_share"
+            android:title="Chia sẻ sách" />
+
         <item
             android:id="@+id/nav_sale"
-            android:title="Đăng bán" />
+            android:icon="@drawable/ic_sale"
+            android:title="Đăng bán sách" />
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="Đăng xuất" />
     </group>
+
 </menu>

@@ -25,7 +25,6 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        // Initialize views
         initializeViews();
 
         // Create an instance of DataHandler for database operations

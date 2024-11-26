@@ -3,9 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/background_app"
     android:orientation="vertical"
-    android:background="#F5F5F5"
     android:padding="15dp"
     tools:openDrawer="start">
 <!--    tools:context=".UserHomePageActivity"-->
@@ -30,13 +29,13 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_gravity="center"
+            android:layout_weight="1"
             android:gravity="center"
-            android:text="Share Books"
+            android:text="TRANG CHỦ"
+            android:textColor="@color/black"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"/>
+            android:textStyle="bold" />
     </LinearLayout>
 
 

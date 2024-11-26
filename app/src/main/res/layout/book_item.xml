@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="#FFFFFF"
+    android:background="@drawable/bg_rounded_shadow"
     android:elevation="4dp"
     android:orientation="horizontal"
     android:padding="10dp">
@@ -57,15 +57,21 @@
             android:textColor="#000000"
             android:textSize="12sp" />
 
+        <!-- Thêm View trống để đẩy Button xuống -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
         <Button
             android:id="@+id/bookItemBtnShowDetail"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="25dp"
+            android:layout_height="wrap_content"
             android:backgroundTint="#4285F4"
             android:paddingHorizontal="16dp"
             android:text="Show Detail"
             android:textColor="#FFFFFF"
             android:textSize="12sp" />
     </LinearLayout>
+
 </LinearLayout>

@@ -6,9 +6,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.util.Log;
 import com.buihuuduy.btl_android.entity.BookEntity;
 import com.buihuuduy.btl_android.entity.UserEntity;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,10 +60,10 @@ public class DataHandler extends SQLiteOpenHelper {
             "('admin1', 'Admin 1', '1234', 1);";
 
     private static final String INIT_BOOK_LIST =
-            "INSERT INTO book (name, description, price, content, image_path) VALUES " +
-            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 'Hằng đẳng thức', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg'), " +
-            "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 'Mò kim đáy bể', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg'), " +
-            "('Anh', 'Hello World', 30000, 'Android Studio', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg');";
+            "INSERT INTO book (name, description, price, content, image_path, user_id) VALUES " +
+            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 'Hằng đẳng thức', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
+            "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 'Mò kim đáy bể', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
+            "('Anh', 'Hello World', 30000, 'Android Studio', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1);";
 
     // Constructor
     public DataHandler(Context context) {
@@ -128,18 +131,18 @@ public class DataHandler extends SQLiteOpenHelper {
     }
 
     // Retrieve user details by email
-    public UserEntity getUserByEmail(String email) {
+    public UserEntity getUserByEmail(String email)
+    {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USER + " WHERE email = ?", new String[]{email});
-
         UserEntity user = null;
         if (cursor.moveToFirst()) {
+            @SuppressLint("Range") Integer id = Integer.parseInt(cursor.getString(cursor.getColumnIndex("id")));
             @SuppressLint("Range") String fullName = cursor.getString(cursor.getColumnIndex("full_name"));
             @SuppressLint("Range") String password = cursor.getString(cursor.getColumnIndex("password"));
             @SuppressLint("Range") int isAdmin = cursor.getInt(cursor.getColumnIndex("isAdmin"));
-            user = new UserEntity(email, fullName, password, isAdmin);
+            user = new UserEntity(email, fullName, password, isAdmin); user.setId(id);
         }
-
         cursor.close();
         return user;
     }
@@ -151,11 +154,21 @@ public class DataHandler extends SQLiteOpenHelper {
         values.put("description", bookEntity.getDescription());
         values.put("content", bookEntity.getContent());
         values.put("image_path", bookEntity.getImagePath());
+        values.put("user_id", bookEntity.getUserId());
+        values.put("status", 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            values.put("created_at", String.valueOf(LocalDate.now()));
+        }
         return db.insert(TABLE_BOOK, null, values);
     }
 
-    public Cursor getAllBooks() {
+    public Cursor getAllBooksOnUser() {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.query(TABLE_BOOK, null, null, null, null, null, null);
+        String query = "SELECT b.name, b.description, b.image_path, u.full_name " +
+                "FROM " + TABLE_BOOK + " b " +
+                "JOIN " + TABLE_USER + " u " +
+                "ON b.user_id = u.id";
+        return db.rawQuery(query, null);
     }
+
 }

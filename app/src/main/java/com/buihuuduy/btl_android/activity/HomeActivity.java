@@ -5,21 +5,17 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.adapter.BookAdapter;
 import com.buihuuduy.btl_android.common.ShowDialog;
 import com.buihuuduy.btl_android.entity.BookEntity;
 import com.google.android.material.navigation.NavigationView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,17 +77,19 @@ public class HomeActivity extends AppCompatActivity
 
     private void loadBooksFromDatabase() {
         bookList.clear();
-        Cursor cursor = dataHandler.getAllBooks();
+        Cursor cursor = dataHandler.getAllBooksOnUser();
         if (cursor.moveToFirst()) {
             do {
                 String bookName = cursor.getString(cursor.getColumnIndexOrThrow("name"));
                 String bookDescription = cursor.getString(cursor.getColumnIndexOrThrow("description"));
                 String imagePath = cursor.getString(cursor.getColumnIndexOrThrow("image_path"));
+                String username = cursor.getString(cursor.getColumnIndexOrThrow("full_name"));
 
                 BookEntity bookEntity = new BookEntity();
                 bookEntity.setName(bookName);
                 bookEntity.setDescription(bookDescription);
                 bookEntity.setImagePath(imagePath);
+                bookEntity.setUserName(username);
 
                 bookList.add(bookEntity);
             } while (cursor.moveToNext());

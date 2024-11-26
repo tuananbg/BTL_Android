@@ -1,4 +1,4 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#FFFFFF" /> <!-- Màu nền -->
+    <solid android:color="#F6F6F6" /> <!-- Màu nền -->
     <corners android:radius="8dp" /> <!-- Bo góc -->
 </shape>

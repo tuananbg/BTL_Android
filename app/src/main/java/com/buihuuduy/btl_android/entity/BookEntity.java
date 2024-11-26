@@ -15,6 +15,9 @@ public class BookEntity
     private LocalDate createdAt;
     private String imagePath;
 
+    // DTO
+    private String userName;
+
     public BookEntity( String name, String description, String content, Integer price, Integer status, Integer categoryId, Integer userId, LocalDate createdAt, String imagePath) {
         this.name = name;
         this.description = description;
@@ -107,5 +110,13 @@ public class BookEntity
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
