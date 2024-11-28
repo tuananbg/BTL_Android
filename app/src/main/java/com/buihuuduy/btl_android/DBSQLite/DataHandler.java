@@ -61,7 +61,7 @@ public class DataHandler extends SQLiteOpenHelper {
 
     private static final String INIT_BOOK_LIST =
             "INSERT INTO book (name, description, price, content, image_path, user_id) VALUES " +
-            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 'Hằng đẳng thức', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
+            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
             "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 'Mò kim đáy bể', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
             "('Anh', 'Hello World', 30000, 'Android Studio', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1);";
 
@@ -76,8 +76,8 @@ public class DataHandler extends SQLiteOpenHelper {
             db.execSQL(CREATE_TABLE_USER);
             db.execSQL(CREATE_TABLE_BOOK);
             db.execSQL(CREATE_TABLE_CATEGORY);
-            db.execSQL(INIT_USER);
-            db.execSQL(INIT_BOOK_LIST);
+            // db.execSQL(INIT_USER);
+            // db.execSQL(INIT_BOOK_LIST);
         } catch (Exception e) {
             Log.e("DataHandler", "Error creating table: " + e.getMessage());
         }
@@ -162,7 +162,7 @@ public class DataHandler extends SQLiteOpenHelper {
         return db.insert(TABLE_BOOK, null, values);
     }
 
-    public Cursor getAllBooksOnUser() {
+    public Cursor getAllBooksOnHomePage() {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT b.name, b.description, b.image_path, u.full_name " +
                 "FROM " + TABLE_BOOK + " b " +

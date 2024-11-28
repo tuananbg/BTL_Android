@@ -27,10 +27,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         initializeViews();
 
-        // Create an instance of DataHandler for database operations
-        databaseHelper = new DataHandler(this);
-
-        // Set button click listeners
         setButtonListeners();
     }
 
@@ -40,6 +36,7 @@ public class RegisterActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextPassword);
         btnRegister = findViewById(R.id.btnRegister);
         btnExit = findViewById(R.id.btnExit);
+        databaseHelper = new DataHandler(this);
     }
 
     private void setButtonListeners() {
@@ -65,12 +62,12 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Validate inputs
         if (!validateInputs(email, fullName, password)) {
-            return;  // Validation failed, exit early
+            return;
         }
 
         // Check if email already exists using the updated method
         if (isEmailExists(email)) {
-            return;  // Email exists, exit early
+            return;
         }
 
         // Proceed with registration

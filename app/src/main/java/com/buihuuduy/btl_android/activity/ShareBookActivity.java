@@ -30,16 +30,20 @@ import java.io.IOException;
 
 public class ShareBookActivity extends AppCompatActivity
 {
+    // Declare menu component
     private DrawerLayout drawerLayout;
     private ImageButton btnToggle;
     private NavigationView navigationView;
 
+    // Declare page component
     private EditText editTextBookName, editTextBookDescription, editTextBookContent;
     private Button btnShareBook;
     private ImageButton imageButtonBookImage;
-    private static final int PICK_IMAGE_REQUEST = 1;
     private DataHandler dataHandler;
+
+    // Global variable
     private String selectedImagePath;
+    private String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -48,18 +52,10 @@ public class ShareBookActivity extends AppCompatActivity
         setContentView(R.layout.sharebook_sidebar);
 
         SharedPreferences sharedPreferences = this.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        String email = sharedPreferences.getString("email", "null");
+        email = sharedPreferences.getString("email", "null");
 
-        drawerLayout = findViewById(R.id.sidebar_layout);
-        btnToggle = findViewById(R.id.btnToggle);
-        navigationView = findViewById(R.id.nav_view);
+        initialViews();
 
-        dataHandler = new DataHandler(this);
-        editTextBookName = findViewById(R.id.editTextBookName);
-        editTextBookDescription = findViewById(R.id.editTextBookDescription);
-        editTextBookContent = findViewById(R.id.editTextBookContent);
-        imageButtonBookImage = findViewById(R.id.shareBookImageBookButton);
-        btnShareBook = findViewById(R.id.btnShareBook);
         imageButtonBookImage.setOnClickListener(v -> pickImageFromGallery());
 
         btnToggle.setOnClickListener(new View.OnClickListener() {
@@ -91,37 +87,55 @@ public class ShareBookActivity extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-                String bookName = editTextBookName.getText().toString().trim();
-                String bookDescription = editTextBookDescription.getText().toString().trim();
-                String bookContent = editTextBookContent.getText().toString().trim();
-                String imagePath = saveImageLocally(selectedImagePath);
-
-                BookEntity bookEntity = new BookEntity();
-                bookEntity.setName(bookName);
-                bookEntity.setDescription(bookDescription);
-                bookEntity.setContent(bookContent);
-                bookEntity.setImagePath(imagePath);
-                bookEntity.setUserId(dataHandler.getUserByEmail(email).getId());
-
-                long result = dataHandler.shareBook(bookEntity);
-                if (result != -1) {
-                    ShowDialog.showToast(ShareBookActivity.this, "Chia sẻ sách thành công!");
-                } else {
-                    ShowDialog.showToast(ShareBookActivity.this, "Có lỗi xảy ra!");
-                }
+                handleShareBtn();
             }
         });
     }
 
+    private void initialViews()
+    {
+        drawerLayout = findViewById(R.id.sidebar_layout);
+        btnToggle = findViewById(R.id.btnToggle);
+        navigationView = findViewById(R.id.nav_view);
+        dataHandler = new DataHandler(this);
+        editTextBookName = findViewById(R.id.editTextBookName);
+        editTextBookDescription = findViewById(R.id.editTextBookDescription);
+        editTextBookContent = findViewById(R.id.editTextBookContent);
+        imageButtonBookImage = findViewById(R.id.shareBookImageBookButton);
+        btnShareBook = findViewById(R.id.btnShareBook);
+    }
+
+    private void handleShareBtn()
+    {
+        String bookName = editTextBookName.getText().toString().trim();
+        String bookDescription = editTextBookDescription.getText().toString().trim();
+        String bookContent = editTextBookContent.getText().toString().trim();
+        String imagePath = saveImageLocally(selectedImagePath);
+
+        BookEntity bookEntity = new BookEntity();
+        bookEntity.setName(bookName);
+        bookEntity.setDescription(bookDescription);
+        bookEntity.setContent(bookContent);
+        bookEntity.setImagePath(imagePath);
+        bookEntity.setUserId(dataHandler.getUserByEmail(email).getId());
+
+        long result = dataHandler.shareBook(bookEntity);
+        if (result != -1) {
+            ShowDialog.showToast(ShareBookActivity.this, "Chia sẻ sách thành công!");
+        } else {
+            ShowDialog.showToast(ShareBookActivity.this, "Có lỗi xảy ra!");
+        }
+    }
+
     private void pickImageFromGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        startActivityForResult(intent, 1);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
             Uri imageUri = data.getData();
             selectedImagePath = getRealPathFromURI(imageUri);
         }

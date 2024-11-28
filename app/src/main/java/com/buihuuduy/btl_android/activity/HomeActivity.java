@@ -21,10 +21,12 @@ import java.util.List;
 
 public class HomeActivity extends AppCompatActivity
 {
-    DrawerLayout drawerLayout;
-    ImageButton btnToggle;
-    NavigationView navigationView;
+    // Declare menu component
+    private DrawerLayout drawerLayout;
+    private ImageButton btnToggle;
+    private NavigationView navigationView;
 
+    // Declare list book component
     private DataHandler dataHandler;
     private ListView listView;
     private BookAdapter adapter;
@@ -35,15 +37,9 @@ public class HomeActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_sidebar);
 
-        drawerLayout = findViewById(R.id.sidebar_layout);
-        btnToggle = findViewById(R.id.btnToggle);
-        navigationView = findViewById(R.id.nav_view);
-        dataHandler = new DataHandler(this);
+        initializeViews();
 
-        listView = findViewById(R.id.homePageListViewBooks);
-        bookList = new ArrayList<>();
-        adapter = new BookAdapter(bookList, dataHandler, this);
-        listView.setAdapter(adapter);
+        getAllBooksOnHomePage();
 
         btnToggle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,8 +47,6 @@ public class HomeActivity extends AppCompatActivity
                 drawerLayout.open();
             }
         });
-
-        loadBooksFromDatabase();
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -75,9 +69,23 @@ public class HomeActivity extends AppCompatActivity
         });
     }
 
-    private void loadBooksFromDatabase() {
+
+    private void initializeViews()
+    {
+        drawerLayout = findViewById(R.id.sidebar_layout);
+        btnToggle = findViewById(R.id.btnToggle);
+        navigationView = findViewById(R.id.nav_view);
+        dataHandler = new DataHandler(this);
+        listView = findViewById(R.id.homePageListViewBooks);
+        bookList = new ArrayList<>();
+        adapter = new BookAdapter(bookList, dataHandler, this);
+        listView.setAdapter(adapter);
+    }
+
+
+    private void getAllBooksOnHomePage() {
         bookList.clear();
-        Cursor cursor = dataHandler.getAllBooksOnUser();
+        Cursor cursor = dataHandler.getAllBooksOnHomePage();
         if (cursor.moveToFirst()) {
             do {
                 String bookName = cursor.getString(cursor.getColumnIndexOrThrow("name"));

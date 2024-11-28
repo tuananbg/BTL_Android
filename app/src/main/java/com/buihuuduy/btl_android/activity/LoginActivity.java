@@ -24,18 +24,19 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize components
+        initializeViews();
+
+        btnLogin.setOnClickListener(new ButtonEvent());
+        btnRegister.setOnClickListener(new ButtonEvent());
+    }
+
+    private void initializeViews()
+    {
         editTextEmail = findViewById(R.id.editTextEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
-
-        // Create an instance of DataHandler for database operations
         databaseHelper = new DataHandler(this);
-
-        // Set button click listeners
-        btnLogin.setOnClickListener(new ButtonEvent());
-        btnRegister.setOnClickListener(new ButtonEvent());
     }
 
     private class ButtonEvent implements View.OnClickListener {
