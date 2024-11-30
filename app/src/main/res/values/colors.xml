@@ -18,4 +18,8 @@
     <color name="primary">#2196F3</color> <!-- Xanh dương nhạt -->
     <color name="primary_dark">#1565C0</color> <!-- Xanh dương đậm -->
     <color name="button_text">#FFFFFF</color>
+
+    <color name="colorYellow">#FFD700</color> <!-- Màu vàng cho nhãn -->
+    <color name="colorRed">#FF5252</color> <!-- Màu đỏ cho nhãn -->
+    <color name="colorGreen">#4CAF50</color> <!-- Màu xanh lá cho nhãn -->
 </resources>

@@ -1,5 +1,6 @@
 package com.buihuuduy.btl_android.DBSQLite;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -81,7 +82,7 @@ public class DataHandler extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USER + " WHERE email = ? AND password = ?", new String[]{email, password});
 
         if (cursor.moveToFirst()) {
-            int isAdmin = cursor.getInt(cursor.getColumnIndex("isAdmin"));
+            @SuppressLint("Range") int isAdmin = cursor.getInt(cursor.getColumnIndex("isAdmin"));
             cursor.close();
             return isAdmin;  // Return 1 if admin, 0 if user
         }
@@ -97,9 +98,9 @@ public class DataHandler extends SQLiteOpenHelper {
 
         UserEntity user = null;
         if (cursor.moveToFirst()) {
-            String fullName = cursor.getString(cursor.getColumnIndex("full_name"));
-            String password = cursor.getString(cursor.getColumnIndex("password"));
-            int isAdmin = cursor.getInt(cursor.getColumnIndex("isAdmin"));
+            @SuppressLint("Range") String fullName = cursor.getString(cursor.getColumnIndex("full_name"));
+            @SuppressLint("Range") String password = cursor.getString(cursor.getColumnIndex("password"));
+            @SuppressLint("Range") int isAdmin = cursor.getInt(cursor.getColumnIndex("isAdmin"));
             user = new UserEntity(email, fullName, password, isAdmin);
         }
 
