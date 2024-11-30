@@ -16,7 +16,7 @@
         android:theme="@style/Theme.BTL_ANDROID"
         tools:targetApi="31">
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".activity.Chart_Export_File"
             android:exported="false" />
         <activity
             android:name=".activity.ShareBookActivity"
@@ -31,7 +31,8 @@
             android:name=".activity.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.Chart_Export_File"
+            android:name=".activity.LoginActivity"
+
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>

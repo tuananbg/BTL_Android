@@ -41,7 +41,7 @@ public class DataHandler extends SQLiteOpenHelper {
                     "name NVARCHAR(255), " +
                     "description TEXT, " +
                     "content TEXT, " +
-                    "price INTEGER, " +
+                    "price INTEGER default 0, " +
                     "status TINYINT(1), " +
                     "user_id INTEGER, " +
                     "category_id INTEGER, " +
@@ -77,8 +77,8 @@ public class DataHandler extends SQLiteOpenHelper {
             db.execSQL(CREATE_TABLE_USER);
             db.execSQL(CREATE_TABLE_BOOK);
             db.execSQL(CREATE_TABLE_CATEGORY);
-            // db.execSQL(INIT_USER);
-            // db.execSQL(INIT_BOOK_LIST);
+             db.execSQL(INIT_USER);
+             db.execSQL(INIT_BOOK_LIST);
         } catch (Exception e) {
             Log.e("DataHandler", "Error creating table: " + e.getMessage());
         }
@@ -178,9 +178,9 @@ public class DataHandler extends SQLiteOpenHelper {
         try{
             SQLiteDatabase db = this.getReadableDatabase();
             String query = "SELECT strftime('%Y-%W', created_at) AS week, " +
-                    "SUM(saleNumber) AS total_sales " +
+                    "Count(id) AS total_sales " +
                     "FROM book " +
-                    "WHERE status = 1 and isFree = 0 " + // Chỉ tính những sách đã bán
+                    "WHERE status = 1 and price != 0 " + // Chỉ tính những sách bán
                     "GROUP BY week " +
                     "ORDER BY week ASC";
 
