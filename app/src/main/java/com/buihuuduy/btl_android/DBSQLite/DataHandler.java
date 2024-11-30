@@ -77,7 +77,7 @@ public class DataHandler extends SQLiteOpenHelper {
             db.execSQL(CREATE_TABLE_BOOK);
             db.execSQL(CREATE_TABLE_CATEGORY);
             // db.execSQL(INIT_USER);
-            // db.execSQL(INIT_BOOK_LIST);
+             db.execSQL(INIT_BOOK_LIST);
         } catch (Exception e) {
             Log.e("DataHandler", "Error creating table: " + e.getMessage());
         }
@@ -163,6 +163,14 @@ public class DataHandler extends SQLiteOpenHelper {
     }
 
     public Cursor getAllBooksOnHomePage() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT b.name, b.description, b.image_path, u.full_name " +
+                "FROM " + TABLE_BOOK + " b " +
+                "JOIN " + TABLE_USER + " u " +
+                "ON b.user_id = u.id";
+        return db.rawQuery(query, null);
+    }
+    public Cursor getAllBookOnMyBook() {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT b.name, b.description, b.image_path, u.full_name " +
                 "FROM " + TABLE_BOOK + " b " +

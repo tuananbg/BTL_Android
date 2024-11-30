@@ -7,20 +7,26 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ListView;
+
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.adapter.BookAdapter;
 import com.buihuuduy.btl_android.common.ShowDialog;
 import com.buihuuduy.btl_android.entity.BookEntity;
 import com.google.android.material.navigation.NavigationView;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity
-{
+public class MyBookActivity extends AppCompatActivity {
     // Declare menu component
     private DrawerLayout drawerLayout;
     private ImageButton btnToggle;
@@ -35,7 +41,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.home_sidebar);
+        setContentView(R.layout.mybook_sidebar);
 
         initializeViews();
 
@@ -53,32 +59,32 @@ public class HomeActivity extends AppCompatActivity
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
                 if (itemId == R.id.nav_home) {
-                    ShowDialog.showToast(HomeActivity.this, "Home menu clicked");
+                    Intent intent = new Intent(MyBookActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                    finish();
                 } else if (itemId == R.id.nav_document) {
-                    Intent intent = new Intent(HomeActivity.this, MyBookActivity.class);
+                    Intent intent = new Intent(MyBookActivity.this, MyBookActivity.class);
                     startActivity(intent);
                     finish();
                 } else if (itemId == R.id.nav_share) {
-                    Intent intent = new Intent(HomeActivity.this, ShareBookActivity.class);
+                    Intent intent = new Intent(MyBookActivity.this, ShareBookActivity.class);
                     startActivity(intent);
                     finish();
                 } else if (itemId == R.id.nav_sale) {
-                    ShowDialog.showToast(HomeActivity.this, "Sale menu clicked");
+                    ShowDialog.showToast(MyBookActivity.this, "Sale menu clicked");
                 }
                 drawerLayout.close();
                 return false;
             }
         });
     }
-
-
     private void initializeViews()
     {
         drawerLayout = findViewById(R.id.sidebar_layout);
         btnToggle = findViewById(R.id.btnToggle);
         navigationView = findViewById(R.id.nav_view);
         dataHandler = new DataHandler(this);
-        listView = findViewById(R.id.homePageListViewBooks);
+        listView = findViewById(R.id.listView);
         bookList = new ArrayList<>();
         adapter = new BookAdapter(bookList, dataHandler, this);
         listView.setAdapter(adapter);
@@ -87,7 +93,7 @@ public class HomeActivity extends AppCompatActivity
 
     private void getAllBooksOnHomePage() {
         bookList.clear();
-        Cursor cursor = dataHandler.getAllBooksOnHomePage();
+        Cursor cursor = dataHandler.getAllBookOnMyBook();
         if (cursor.moveToFirst()) {
             do {
                 String bookName = cursor.getString(cursor.getColumnIndexOrThrow("name"));

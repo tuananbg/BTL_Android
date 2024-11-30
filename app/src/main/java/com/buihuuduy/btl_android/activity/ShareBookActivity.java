@@ -74,7 +74,9 @@ public class ShareBookActivity extends AppCompatActivity
                     startActivity(intent);
                     finish();
                 } else if (itemId == R.id.nav_document) {
-                    ShowDialog.showToast(ShareBookActivity.this, "Document menu clicked");
+                    Intent intent = new Intent(ShareBookActivity.this, MyBookActivity.class);
+                    startActivity(intent);
+                    finish();
                 } else if (itemId == R.id.nav_sale) {
                     ShowDialog.showToast(ShareBookActivity.this, "Sale menu clicked");
                 }
