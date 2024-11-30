@@ -1,42 +1,42 @@
-package com.buihuuduy.btl_android;
+package com.buihuuduy.btl_android.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
-import com.buihuuduy.btl_android.entity.UserEntity;
+import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.common.ShowDialog;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText editTextEmail, editTextPassword;
-    Button btnLogin, btnRegister;
-    DataHandler databaseHelper;
+    private EditText editTextEmail, editTextPassword;
+    private Button btnLogin, btnRegister;
+    private DataHandler databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize components
+        initializeViews();
+
+        btnLogin.setOnClickListener(new ButtonEvent());
+        btnRegister.setOnClickListener(new ButtonEvent());
+    }
+
+    private void initializeViews()
+    {
         editTextEmail = findViewById(R.id.editTextEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
-
-        // Create an instance of DataHandler for database operations
         databaseHelper = new DataHandler(this);
-
-        // Set button click listeners
-        btnLogin.setOnClickListener(new ButtonEvent());
-        btnRegister.setOnClickListener(new ButtonEvent());
     }
 
     private class ButtonEvent implements View.OnClickListener {
@@ -52,7 +52,8 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void handleLogin() {
+    private void handleLogin()
+    {
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
@@ -75,9 +76,14 @@ public class LoginActivity extends AppCompatActivity {
             // User login
             ShowDialog.showToast(LoginActivity.this, "Đăng nhập thành công!");
 
-            Intent intent = new Intent(LoginActivity.this, UserActivity.class);
+            SharedPreferences sharedPreferences = LoginActivity.this.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("email", email);
+            editor.apply();
+
+            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
             startActivity(intent);
-            finish();  // Close the login activity
+            finish();
         } else {
             // Invalid credentials
             ShowDialog.showAlertDialog(this, "Thông báo", "Thông tin đăng nhập không chính xác");

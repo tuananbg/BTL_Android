@@ -1,4 +1,4 @@
-package com.buihuuduy.btl_android;
+package com.buihuuduy.btl_android.activity;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
+import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.entity.UserEntity;
 import com.buihuuduy.btl_android.common.ShowDialog;
 
@@ -24,13 +25,8 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        // Initialize views
         initializeViews();
 
-        // Create an instance of DataHandler for database operations
-        databaseHelper = new DataHandler(this);
-
-        // Set button click listeners
         setButtonListeners();
     }
 
@@ -40,6 +36,7 @@ public class RegisterActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextPassword);
         btnRegister = findViewById(R.id.btnRegister);
         btnExit = findViewById(R.id.btnExit);
+        databaseHelper = new DataHandler(this);
     }
 
     private void setButtonListeners() {
@@ -65,12 +62,12 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Validate inputs
         if (!validateInputs(email, fullName, password)) {
-            return;  // Validation failed, exit early
+            return;
         }
 
         // Check if email already exists using the updated method
         if (isEmailExists(email)) {
-            return;  // Email exists, exit early
+            return;
         }
 
         // Proceed with registration

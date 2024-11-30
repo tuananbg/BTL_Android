@@ -1,88 +1,81 @@
 package com.buihuuduy.btl_android.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.view.LayoutInflater;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Button;
-import android.view.View;
-import androidx.recyclerview.widget.RecyclerView;
-
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
+import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.entity.BookEntity;
-
+import java.io.File;
 import java.util.List;
+import android.view.LayoutInflater;
 
-public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder> {
-    private Context context;
-    private List<BookEntity> bookList;
+public class BookAdapter extends BaseAdapter
+{
+    TextView textViewBookName, textViewDescription, textViewAuthor;
+    ImageView imageViewBook;
+    Button btnShowDetail;
 
-    public BookAdapter(Context context, List<BookEntity> bookList) {
-        this.context = context;
+    private final List<BookEntity> bookList;
+    private final DataHandler dataHandler;
+    private final Context context;
+
+    public BookAdapter(List<BookEntity> bookList, DataHandler dataHandler, Context context) {
         this.bookList = bookList;
-    }
-
-    @NonNull
-    @Override
-    public BookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_book, parent, false);
-        return new BookViewHolder(view);
+        this.dataHandler = dataHandler;
+        this.context = context;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
-        BookEntity book = bookList.get(position);
-        int status = book.getStatus();
-        switch (status){
-            case 0:
-                holder.colorIndicator.setBackgroundColor(Color.GREEN);
-                break;
-            case 1:
-                holder.colorIndicator.setBackgroundColor(Color.YELLOW);
-                break;
-            case 2:
-                holder.colorIndicator.setBackgroundColor(Color.RED);
-                break;
-            default:
-                holder.colorIndicator.setBackgroundColor(Color.GREEN);
-                break;
-        }
-        holder.bookName.setText(book.getName());
-        holder.bookAuthor.setText(book.getAuthor());
-        holder.bookPrice.setText(String.format("%.0f VND", book.getPrice()));
-        holder.showDetailButton.setOnClickListener(v -> {
-            // Xử lý sự kiện khi nhấn "Show Detail"
-        });
-        // Load ảnh (nếu dùng thư viện như Glide hoặc Picasso)
-    }
-
-    @Override
-    public int getItemCount() {
+    public int getCount() {
         return bookList.size();
     }
 
-    public static class BookViewHolder extends RecyclerView.ViewHolder {
-        TextView bookName, bookAuthor, bookPrice;
-        ImageView bookImage;
-        Button showDetailButton;
-        View colorIndicator;
+    @Override
+    public Object getItem(int position) {
+        return bookList.get(position);
+    }
 
-        public BookViewHolder(@NonNull View itemView) {
-            super(itemView);
-            bookName = itemView.findViewById(R.id.bookName);
-            bookAuthor = itemView.findViewById(R.id.bookAuthor);
-            bookPrice = itemView.findViewById(R.id.bookPrice);
-            bookImage = itemView.findViewById(R.id.bookImage);
-            showDetailButton = itemView.findViewById(R.id.showDetailButton);
-            colorIndicator = itemView.findViewById(R.id.colorIndicator);
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent)
+    {
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.book_item, parent, false);
         }
+
+        textViewBookName = convertView.findViewById(R.id.bookItemName);
+        textViewDescription = convertView.findViewById(R.id.bookItemDescription);
+        imageViewBook = convertView.findViewById(R.id.bookItemImage);
+        textViewAuthor = convertView.findViewById(R.id.bookItemAuthor);
+
+        BookEntity book = bookList.get(position);
+
+        textViewBookName.setText(book.getName());
+        textViewDescription.setText(book.getDescription());
+        textViewAuthor.setText(book.getUserName());
+
+        File imgFile = new File(book.getImagePath());
+        if (imgFile.exists()) {
+            Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            imageViewBook.setImageBitmap(bitmap);
+        } else {
+            imageViewBook.setImageResource(R.drawable.logo); // Thay bằng ảnh mặc định
+        }
+
+        // xu ly button
+
+        return convertView;
     }
 }
-

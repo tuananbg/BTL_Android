@@ -1,57 +1,122 @@
 package com.buihuuduy.btl_android.entity;
 
-public class BookEntity {
-    private int id;
+import java.time.LocalDate;
+
+public class BookEntity
+{
+    private Integer id;
     private String name;
-    private String author;
-    private double price;
-    private String imageUrl;
-    private int status;
+    private String description;
+    private String content;
+    private Integer price;
+    private Integer status;
+    private Integer categoryId;
+    private Integer userId;
+    private LocalDate createdAt;
+    private String imagePath;
 
-    public int getStatus() {
-        return status;
-    }
+    // DTO
+    private String userName;
 
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    // Constructor, getters, và setters
-    public BookEntity(int id, String name, String author, double price, String imageUrl, int status) {
-        this.id = id;
+    public BookEntity( String name, String description, String content, Integer price, Integer status, Integer categoryId, Integer userId, LocalDate createdAt, String imagePath) {
         this.name = name;
-        this.author = author;
+        this.description = description;
+        this.content = content;
         this.price = price;
-        this.imageUrl = imageUrl;
         this.status = status;
+        this.categoryId = categoryId;
+        this.userId = userId;
+        this.createdAt = createdAt;
+        this.imagePath = imagePath;
     }
 
-    public void setId(int id) {
+    public BookEntity(){}
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public String getDescription() {
+        return description;
     }
 
-    public void setPrice(double price) {
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
-    public BookEntity() {
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
-    public int getId() { return id; }
-    public String getName() { return name; }
-    public String getAuthor() { return author; }
-    public double getPrice() { return price; }
-    public String getImageUrl() { return imageUrl; }
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 }

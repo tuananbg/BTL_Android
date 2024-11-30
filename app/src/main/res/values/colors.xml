@@ -7,7 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="dark_gray">#424242</color>
+    <color name="dark_gray">#4D424242</color>
     <color name="light_gray">#f0f0f0</color>
     <color name="colorPrimary">#6586E6</color>
     <!-- Các màu hiện có -->
@@ -19,7 +19,6 @@
     <color name="primary_dark">#1565C0</color> <!-- Xanh dương đậm -->
     <color name="button_text">#FFFFFF</color>
 
-    <color name="colorYellow">#FFD700</color> <!-- Màu vàng cho nhãn -->
-    <color name="colorRed">#FF5252</color> <!-- Màu đỏ cho nhãn -->
-    <color name="colorGreen">#4CAF50</color> <!-- Màu xanh lá cho nhãn -->
+    <color name="background_app">#E0E0E0</color>
+
 </resources>
