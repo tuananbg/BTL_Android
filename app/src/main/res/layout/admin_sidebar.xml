@@ -9,7 +9,7 @@
 
     <include
         android:id="@+id/app_bar_main"
-        layout="@layout/home_page"
+        layout="@layout/activity_admin"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -21,6 +21,6 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/sidebar_header"
-        app:menu="@menu/sidebar_menu" />
+        app:menu="@menu/admin_sidebar_menu" />
     <!---->
 </androidx.drawerlayout.widget.DrawerLayout>

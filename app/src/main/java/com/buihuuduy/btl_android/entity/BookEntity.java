@@ -17,6 +17,7 @@ public class BookEntity
 
     // DTO
     private String userName;
+    private String userEmail;
 
     public BookEntity( String name, String description, String content, Integer price, Integer status, Integer categoryId, Integer userId, LocalDate createdAt, String imagePath) {
         this.name = name;
@@ -118,5 +119,13 @@ public class BookEntity
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 }
