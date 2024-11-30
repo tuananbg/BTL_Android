@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.buihuuduy.btl_android"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -50,7 +50,8 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.poiooxml)
+    implementation(libs.mpandroidchart)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
