@@ -1,5 +1,6 @@
 package com.buihuuduy.btl_android.activity;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -11,6 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
 
 
@@ -24,11 +26,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.buihuuduy.btl_android.entity.BookEntity;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -53,7 +58,7 @@ public class Chart_Export_File extends AppCompatActivity {
     private BarChart barChart;
     Button exportExcelBtn;
     Button exportPdfBtn;
-//    private ExportUtils exportUtils;
+    private DataHandler dataHandler;
 
     private static final int PERMISSION_REQUEST_CODE = 100;
     @Override
@@ -72,35 +77,43 @@ public class Chart_Export_File extends AppCompatActivity {
             }
         }
 
+        dataHandler = new DataHandler(this);
+
         barChart = findViewById(R.id.barChart);
         exportExcelBtn = findViewById(R.id.exportExcelBtn);
         exportPdfBtn = findViewById(R.id.exportPdfBtn);
 
         Random random = new Random();
+        ArrayList<BarEntry> weeklyEntries1 = dataHandler.getWeeklySalesFromDatabase();;
+
+        int numberOfWeeks =  weeklyEntries1.size();
+        ArrayList<String> labels = new ArrayList<>();
+
         ArrayList<BarEntry> weeklyEntries = new ArrayList<>();
-        float weeklySales = 0;
-        int week = 1;
+        for (int i = 0; i < numberOfWeeks; i++) {
+            BarEntry entry = weeklyEntries1.get(i);
+            // Sử dụng i làm giá trị x
+            weeklyEntries.add(new BarEntry(i, entry.getY()));
+        }
 
-        for (int day = 1; day <= 30; day++) {
-            float sales = random.nextInt(100) + 10;  // Giả lập số sách bán
-            weeklySales += sales;
-
-            // Sau khi đủ 7 ngày, thêm tuần vào biểu đồ và reset weeklySales
-            if (day % 7 == 0 || day == 30) {  // Mỗi tuần có 7 ngày
-                weeklyEntries.add(new BarEntry(week, weeklySales));
-                weeklySales = 0;  // Reset cho tuần tiếp theo
-                week++;
-            }
+        for (int i = 0; i < numberOfWeeks; i++) {
+            labels.add("Tuần " + (i + 1)); // Tạo nhãn: "Tuần 1", "Tuần 2", ...
         }
 
         // Tạo BarDataSet
-        BarDataSet barDataSet = new BarDataSet(weeklyEntries, "Tổng Số lượng sách đã bán theo tuần");
+        BarDataSet barDataSet = new BarDataSet(weeklyEntries, "Tổng số lượng sách đã bán theo tuần");
         barDataSet.setColor(getResources().getColor(R.color.purple_700));
         barDataSet.setValueTextColor(getResources().getColor(R.color.black));
 
+
         // Tùy chỉnh trục X
         XAxis xAxis = barChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels)); // Thiết lập nhãn động
+        xAxis.setGranularity(1f); // Đảm bảo hiển thị mỗi nhãn một cách chính xác
+        xAxis.setGranularityEnabled(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); // Đặt trục X ở dưới cùng
+        //xAxis.setDrawGridLines(false); // Ẩn lưới
+        barChart.getDescription().setEnabled(false);
 
         // Tạo BarData và cài đặt vào biểu đồ
         BarData barData = new BarData(barDataSet);
@@ -109,82 +122,29 @@ public class Chart_Export_File extends AppCompatActivity {
         barChart.setData(barData);
         barChart.invalidate(); // Refresh biểu đồ
 
-        // Thiết lập listener cho nút xuất Excel và PDF
-//        exportExcelBtn.setOnClickListener(v -> exportUtils.exportToExcel(weeklyEntries));
-//        exportPdfBtn.setOnClickListener(v -> exportUtils.exportToPdf(weeklyEntries));
-
         exportExcelBtn.setOnClickListener(v -> exportToExcel(weeklyEntries));
         exportPdfBtn.setOnClickListener(v -> exportToPdf(weeklyEntries));
 
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-//            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-//            return insets;
-//        });
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Đã cấp quyền", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Từ chối cấp quyền", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-//    public void exportToExcel(ArrayList<BarEntry> weeklyEntries) {
-//        try {
-//            Workbook workbook = new XSSFWorkbook();
-//            Sheet sheet = workbook.createSheet("Báo cáo bán hàng");
-//
-//            Row headerRow = sheet.createRow(0);
-//            headerRow.createCell(0).setCellValue("Tuần");
-//            headerRow.createCell(1).setCellValue("Số lượng sách bán");
-//
-//            int rowIndex = 1;
-//            for (BarEntry entry : weeklyEntries) {
-//                Row row = sheet.createRow(rowIndex++);
-//                row.createCell(0).setCellValue(entry.getX());
-//                row.createCell(1).setCellValue(entry.getY());
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == PERMISSION_REQUEST_CODE) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                Toast.makeText(this, "Đã cấp quyền", Toast.LENGTH_SHORT).show();
+//            } else {
+//                Toast.makeText(this, "Từ chối cấp quyền", Toast.LENGTH_SHORT).show();
 //            }
-//
-//            File file = new File(Environment.getExternalStoragePublicDirectory(
-//                    Environment.DIRECTORY_DOWNLOADS), "sales_report1.xlsx");
-//
-//            try (FileOutputStream fileOut = new FileOutputStream(file)) {
-//                workbook.write(fileOut);
-//                runOnUiThread(() -> {
-//                    showAlert("Xuất Excel thành công tại: " + file.getAbsolutePath());
-//                    Toast toast = Toast.makeText(this, "Xuất Excel thành công!", Toast.LENGTH_LONG);
-//                    View view = toast.getView();
-//                    TextView text = view.findViewById(android.R.id.message);
-//                    text.setTextColor(Color.RED);
-//                    text.setBackgroundColor(Color.YELLOW);
-//                    toast.show();
-//                });
-//            }
-//        } catch (Exception e) {
-//            System.out.println("Debug message: " + e.getMessage());
-//            e.printStackTrace();
-//            runOnUiThread(() ->
-//                    Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_LONG).show()
-//            );
 //        }
 //    }
 
     public void exportToExcel(ArrayList<BarEntry> weeklyEntries) {
-        // Kiểm tra quyền ghi
-//        if (ContextCompat.checkSelfPermission(this,
-//                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//                    PERMISSION_REQUEST_CODE);
-//            return;
-//        }
 
         try {
             // Tạo workbook mới
@@ -260,7 +220,7 @@ public class Chart_Export_File extends AppCompatActivity {
 
             int yPosition = 100;
             for (BarEntry entry : weeklyEntries) {
-                canvas.drawText("Tuần " + entry.getX() + ": " + entry.getY() + " cuốn", 50, yPosition, paint);
+                canvas.drawText("Tuần " + (entry.getX() + 1) + ": " + entry.getY() + " cuốn", 50, yPosition, paint);
                 yPosition += 30;
             }
 

@@ -10,6 +10,7 @@ import android.os.Build;
 import android.util.Log;
 import com.buihuuduy.btl_android.entity.BookEntity;
 import com.buihuuduy.btl_android.entity.UserEntity;
+import com.github.mikephil.charting.data.BarEntry;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -170,5 +171,40 @@ public class DataHandler extends SQLiteOpenHelper {
                 "ON b.user_id = u.id";
         return db.rawQuery(query, null);
     }
+
+    public ArrayList<BarEntry> getWeeklySalesFromDatabase() {
+        ArrayList<BarEntry> weeklyEntries = new ArrayList<>();
+
+        try{
+            SQLiteDatabase db = this.getReadableDatabase();
+            String query = "SELECT strftime('%Y-%W', created_at) AS week, " +
+                    "SUM(saleNumber) AS total_sales " +
+                    "FROM book " +
+                    "WHERE status = 1 and isFree = 0 " + // Chỉ tính những sách đã bán
+                    "GROUP BY week " +
+                    "ORDER BY week ASC";
+
+            Cursor cursor = db.rawQuery(query, null);
+
+            if (cursor.moveToFirst()) {
+                int weekIndex = 1;
+                do {
+                    int temp = cursor.getColumnIndex("total_sales");
+                    if(temp < 0) temp = 0;
+                    float weeklySales = cursor.getFloat(temp);
+                    weeklyEntries.add(new BarEntry(weekIndex, weeklySales));
+                    weekIndex++;
+                } while (cursor.moveToNext());
+            }
+
+            cursor.close();
+            db.close();
+        }catch(Exception e){
+            String x = e.getMessage();
+        }
+
+        return weeklyEntries;
+    }
+
 
 }
