@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.os.Build;
 import android.util.Log;
 import com.buihuuduy.btl_android.entity.BookEntity;
@@ -35,6 +36,10 @@ public class DataHandler extends SQLiteOpenHelper {
                     "isAdmin INTEGER" +
                     ");";
 
+    // book status
+    // 0: đang chờ phê duyệt
+    // 1: đã phê duyệt
+    // 2: từ chối
     private static final String CREATE_TABLE_BOOK =
             "create table " + TABLE_BOOK + " (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -61,10 +66,10 @@ public class DataHandler extends SQLiteOpenHelper {
             "('admin1', 'Admin 1', '1234', 1);";
 
     private static final String INIT_BOOK_LIST =
-            "INSERT INTO book (name, description, price, content, image_path, user_id) VALUES " +
-            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
-            "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 'Mò kim đáy bể', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
-            "('Anh', 'Hello World', 30000, 'Android Studio', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1);";
+            "INSERT INTO book (name, description, price, status, content, image_path, user_id) VALUES " +
+            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 0, 'Hằng đẳng thức', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
+            "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 0, 'Mò kim đáy bể', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
+            "('Anh', 'Hello World', 30000,  0, 'Android Studio', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1);";
 
     // Constructor
     public DataHandler(Context context) {
@@ -207,4 +212,91 @@ public class DataHandler extends SQLiteOpenHelper {
     }
 
 
+    public ArrayList<BookEntity> getAllBooksAwaitingApproval() {
+        ArrayList<BookEntity> bookList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query =
+                "SELECT b.*, u.full_name FROM " + TABLE_BOOK + " b " +
+                        "JOIN " + TABLE_USER + " u " +
+                        "ON b.user_id = u.id " +
+                        "WHERE b.status = 0";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                String description = cursor.getString(cursor.getColumnIndexOrThrow("description"));
+                int price = cursor.getInt(cursor.getColumnIndexOrThrow("price"));
+                String imagePath = cursor.getString(cursor.getColumnIndexOrThrow("image_path"));
+                String username = cursor.getString(cursor.getColumnIndexOrThrow("full_name"));
+
+                BookEntity book = new BookEntity();
+                book.setId(id);
+                book.setName(name);
+                book.setDescription(description);
+                book.setPrice(price);
+                book.setImagePath(imagePath);
+                book.setUserName(username);
+
+                bookList.add(book);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return bookList;
+    }
+
+    public BookEntity getBookById(int id) {
+        BookEntity book = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query =
+                "SELECT b.*, u.full_name, u.email FROM " + TABLE_BOOK + " b " +
+                        "JOIN " + TABLE_USER + " u " +
+                        "ON b.user_id = u.id " +
+                        "WHERE b.id = " + id;
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            book = new BookEntity();
+            String content = cursor.getString(cursor.getColumnIndexOrThrow("content"));
+            String description = cursor.getString(cursor.getColumnIndexOrThrow("description"));
+            int price = cursor.getInt(cursor.getColumnIndexOrThrow("price"));
+            String imagePath = cursor.getString(cursor.getColumnIndexOrThrow("image_path"));
+            String username = cursor.getString(cursor.getColumnIndexOrThrow("full_name"));
+            String email = cursor.getString(cursor.getColumnIndexOrThrow("email"));
+
+            book.setContent(content);
+            book.setDescription(description);
+            book.setPrice(price);
+            book.setImagePath(imagePath);
+            book.setUserName(username);
+            book.setUserEmail(email);
+        }
+
+        cursor.close();
+        db.close();
+
+        return book;
+    }
+
+    public boolean updateBookStatus(int id, int status) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "UPDATE book SET status = ? WHERE id = ?";
+
+        // Thực thi câu lệnh SQL
+        SQLiteStatement statement = db.compileStatement(query);
+        statement.bindLong(1, status);       // Liên kết tham số đầu tiên là status (kiểu int)
+        statement.bindLong(2, id);       // Liên kết tham số thứ hai là bookId
+
+        // Thực hiện cập nhật và trả về true nếu ít nhất một dòng bị ảnh hưởng
+        return statement.executeUpdateDelete() > 0;
+    }
 }

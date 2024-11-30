@@ -24,7 +24,7 @@ public class BookAdapter extends BaseAdapter
 
     private final List<BookEntity> bookList;
     private final DataHandler dataHandler;
-    private final Context context;
+    protected final Context context;
 
     public BookAdapter(List<BookEntity> bookList, DataHandler dataHandler, Context context) {
         this.bookList = bookList;
