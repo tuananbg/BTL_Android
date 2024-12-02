@@ -3,10 +3,18 @@ package com.buihuuduy.btl_android.activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -21,6 +29,7 @@ import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.adapter.BookAdapter;
 import com.buihuuduy.btl_android.common.ShowDialog;
 import com.buihuuduy.btl_android.entity.BookEntity;
+import com.buihuuduy.btl_android.entity.CategoryEntity;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -33,6 +42,7 @@ public class MyBookActivity extends AppCompatActivity {
     private NavigationView navigationView;
 
     // Declare list book component
+    private Spinner spinnerCategory;
     private DataHandler dataHandler;
     private ListView listView;
     private BookAdapter adapter;
@@ -45,7 +55,7 @@ public class MyBookActivity extends AppCompatActivity {
 
         initializeViews();
 
-        getAllBooksOnHomePage();
+        getAllBooksOnMyBook();
 
         btnToggle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,6 +87,58 @@ public class MyBookActivity extends AppCompatActivity {
                 return false;
             }
         });
+        Button btnFilter = findViewById(R.id.btnFilter);
+        btnFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                performFilter();
+            }
+        });
+    }
+    private void performFilter() {
+        String selectedCategory = spinnerCategory.getSelectedItem().toString(); // Lấy tên category
+        String filterType = "";
+
+        // Kiểm tra nếu các CheckBox được chọn
+        CheckBox checkBoxShare = findViewById(R.id.checkBoxShare);
+        CheckBox checkBoxSale = findViewById(R.id.checkBoxSale);
+
+        List<String> selectedFilters = new ArrayList<>();
+        if (checkBoxShare.isChecked()) {
+            selectedFilters.add("Share");
+        }
+        if (checkBoxSale.isChecked()) {
+            selectedFilters.add("Sale");
+        }
+
+        // Lọc sách theo category và loại tài liệu
+        filterBooks(selectedCategory, selectedFilters);
+    }
+
+    private void filterBooks(String categoryName, List<String> filterTypes) {
+        bookList.clear();
+        Cursor cursor = dataHandler.getFilteredBooks(categoryName, filterTypes); // Hàm xử lý lấy sách lọc
+        if (cursor.moveToFirst()) {
+            do {
+                String bookName = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                String bookDescription = cursor.getString(cursor.getColumnIndexOrThrow("description"));
+                String imagePath = cursor.getString(cursor.getColumnIndexOrThrow("image_path"));
+                String username = cursor.getString(cursor.getColumnIndexOrThrow("full_name"));
+                Integer price = cursor.getInt(cursor.getColumnIndexOrThrow("price"));
+
+                BookEntity bookEntity = new BookEntity();
+                bookEntity.setName(bookName);
+                bookEntity.setDescription(bookDescription);
+                bookEntity.setImagePath(imagePath);
+                bookEntity.setUserName(username);
+                bookEntity.setPrice(price);
+
+                bookList.add(bookEntity);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        adapter.notifyDataSetChanged();
     }
     private void initializeViews()
     {
@@ -85,13 +147,40 @@ public class MyBookActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.nav_view);
         dataHandler = new DataHandler(this);
         listView = findViewById(R.id.listView);
+        spinnerCategory = findViewById(R.id.spinner2);
+
         bookList = new ArrayList<>();
+
         adapter = new BookAdapter(bookList, dataHandler, this);
         listView.setAdapter(adapter);
+
+        List<CategoryEntity> categories = getAllCategories();
+        ArrayList<String> cateNames =new ArrayList<>();
+        cateNames.add("Tất cả");
+        for (CategoryEntity category : categories) {
+            cateNames.add(category.getName());
+            Log.d("CategoryName", "Category: " + category.getName());
+        }
+
+        if (cateNames.isEmpty()) {
+            Log.d("SpinnerError", "Category names list is empty");
+        } else {
+            Log.d("SpinnerSuccess", "Category names loaded successfully");
+        }
+        // Tạo ArrayAdapter
+        ArrayAdapter<String> adapterCate = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                cateNames
+        );
+        adapterCate.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Gắn adapter vào Spinner
+        spinnerCategory.setAdapter(adapterCate);
+
     }
 
 
-    private void getAllBooksOnHomePage() {
+    private void getAllBooksOnMyBook() {
         bookList.clear();
         Cursor cursor = dataHandler.getAllBookOnMyBook();
         if (cursor.moveToFirst()) {
@@ -100,12 +189,14 @@ public class MyBookActivity extends AppCompatActivity {
                 String bookDescription = cursor.getString(cursor.getColumnIndexOrThrow("description"));
                 String imagePath = cursor.getString(cursor.getColumnIndexOrThrow("image_path"));
                 String username = cursor.getString(cursor.getColumnIndexOrThrow("full_name"));
+                Integer price = cursor.getInt(cursor.getColumnIndexOrThrow("price"));
 
                 BookEntity bookEntity = new BookEntity();
                 bookEntity.setName(bookName);
                 bookEntity.setDescription(bookDescription);
                 bookEntity.setImagePath(imagePath);
                 bookEntity.setUserName(username);
+                bookEntity.setPrice(price);
 
                 bookList.add(bookEntity);
             } while (cursor.moveToNext());
@@ -113,4 +204,20 @@ public class MyBookActivity extends AppCompatActivity {
         cursor.close();
         adapter.notifyDataSetChanged();
     }
+
+    public List<CategoryEntity> getAllCategories() {
+        List<CategoryEntity> categories = new ArrayList<>();
+        Cursor cursor = dataHandler.getAllCategories();
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                categories.add(new CategoryEntity(id, name));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return categories;
+    }
+
 }

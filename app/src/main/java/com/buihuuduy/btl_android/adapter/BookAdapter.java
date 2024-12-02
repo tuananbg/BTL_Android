@@ -3,6 +3,7 @@ package com.buihuuduy.btl_android.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -18,7 +19,7 @@ import android.view.LayoutInflater;
 
 public class BookAdapter extends BaseAdapter
 {
-    TextView textViewBookName, textViewDescription, textViewAuthor;
+    TextView textViewBookName, textViewDescription, textViewAuthor, textViewPrice;
     ImageView imageViewBook;
     Button btnShowDetail;
 
@@ -59,12 +60,14 @@ public class BookAdapter extends BaseAdapter
         textViewDescription = convertView.findViewById(R.id.bookItemDescription);
         imageViewBook = convertView.findViewById(R.id.bookItemImage);
         textViewAuthor = convertView.findViewById(R.id.bookItemAuthor);
+        textViewPrice = convertView.findViewById((R.id.bookItemPrice));
 
         BookEntity book = bookList.get(position);
 
         textViewBookName.setText(book.getName());
         textViewDescription.setText(book.getDescription());
         textViewAuthor.setText(book.getUserName());
+        textViewPrice.setText("Price: "+book.getPrice());
 
         File imgFile = new File(book.getImagePath());
         if (imgFile.exists()) {

@@ -60,10 +60,16 @@ public class DataHandler extends SQLiteOpenHelper {
             "('admin1', 'Admin 1', '1234', 1);";
 
     private static final String INIT_BOOK_LIST =
-            "INSERT INTO book (name, description, price, content, image_path, user_id) VALUES " +
-            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
-            "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 'Mò kim đáy bể', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
-            "('Anh', 'Hello World', 30000, 'Android Studio', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1);";
+            "INSERT INTO book (name, description, price, content, image_path, user_id, category_id) VALUES " +
+            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1, 1), " +
+            "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 'Mò kim đáy bể', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1, 2), " +
+            "('Anh', 'Hello World', 0, 'Android Studio', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1, 3);";
+
+    private static  final  String INIT_CATE =
+            "INSERT INTO category (id, name) VALUES " +
+                    "(1, 'Tư duy'), " +
+                    "(2, 'Sáng tạo'), " +
+                    "(3, 'Học thuật');";
 
     // Constructor
     public DataHandler(Context context) {
@@ -78,6 +84,7 @@ public class DataHandler extends SQLiteOpenHelper {
             db.execSQL(CREATE_TABLE_CATEGORY);
             // db.execSQL(INIT_USER);
              db.execSQL(INIT_BOOK_LIST);
+             db.execSQL(INIT_CATE);
         } catch (Exception e) {
             Log.e("DataHandler", "Error creating table: " + e.getMessage());
         }
@@ -164,7 +171,7 @@ public class DataHandler extends SQLiteOpenHelper {
 
     public Cursor getAllBooksOnHomePage() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT b.name, b.description, b.image_path, u.full_name " +
+        String query = "SELECT b.name, b.description, b.image_path, u.full_name, b.price " +
                 "FROM " + TABLE_BOOK + " b " +
                 "JOIN " + TABLE_USER + " u " +
                 "ON b.user_id = u.id";
@@ -172,11 +179,43 @@ public class DataHandler extends SQLiteOpenHelper {
     }
     public Cursor getAllBookOnMyBook() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT b.name, b.description, b.image_path, u.full_name " +
+        String query = "SELECT b.name, b.description, b.image_path, u.full_name, b.price  " +
                 "FROM " + TABLE_BOOK + " b " +
                 "JOIN " + TABLE_USER + " u " +
                 "ON b.user_id = u.id";
         return db.rawQuery(query, null);
+    }
+    public Cursor getAllCategories(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT c.name, c.id " +
+                "FROM " + TABLE_CATEGORY + " c ";
+        return db.rawQuery(query, null);
+    }
+    public Cursor getFilteredBooks(String categoryName, List<String> filterType) {
+        String query = "SELECT b.*, u.full_name FROM book b " +
+                "JOIN category c ON b.category_id = c.id " +
+                "JOIN user u ON b.user_id = u.id ";
+        // Thêm điều kiện lọc loại tài liệu nếu cần
+        if (!filterType.isEmpty() && filterType.size() != 2) {
+            if(filterType.get(0).contains("Sale")){
+                query += "AND b.price > 0 "; // "type" là cột lưu giá trị "Share" hoặc "Sale"
+            }else{
+                query += "AND b.price = 0 ";
+            }
+
+            if(!categoryName.contains("Tất cả")){
+                query += "WHERE c.name = ?";
+                return getReadableDatabase().rawQuery(query, new String[]{categoryName});
+            }
+            return getReadableDatabase().rawQuery(query, null);
+        }else{
+                if(!categoryName.contains("Tất cả")){
+                    query += "WHERE c.name = ?";
+                    return getReadableDatabase().rawQuery(query, new String[]{categoryName});
+                }
+        }
+
+        return getReadableDatabase().rawQuery(query, null);
     }
 
 }
