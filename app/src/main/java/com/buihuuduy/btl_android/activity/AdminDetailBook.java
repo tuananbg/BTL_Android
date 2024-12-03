@@ -23,7 +23,7 @@ import java.io.File;
 
 public class AdminDetailBook extends AppCompatActivity {
     private ImageView adminBookImage, adminDetailBookBackButton;
-    private TextView adminAuthorName, adminAuthorEmail, adminDetailBookContent, adminDetailBookDescription;
+    private TextView adminAuthorName, adminAuthorEmail, adminBookName, adminBookPrice, adminDetailBookContent, adminDetailBookDescription;
     private Button adminApproveButton, adminRejectButton;
     private DataHandler dataHandler;
 
@@ -38,19 +38,20 @@ public class AdminDetailBook extends AppCompatActivity {
         adminDetailBookBackButton = findViewById(R.id.adminDetailBookBackButton);
         adminBookImage = findViewById(R.id.adminBookImage);
         adminAuthorName = findViewById(R.id.adminAuthorName);
-        adminAuthorEmail = findViewById(R.id.adminAuthorEmail);
+        adminBookName = findViewById(R.id.adminBookName);
+        adminBookPrice = findViewById(R.id.adminBookPrice);
         adminDetailBookContent = findViewById(R.id.adminDetailBookContent);
-        adminDetailBookDescription = findViewById(R.id.adminDetailBookDescription);
         adminApproveButton = findViewById(R.id.adminApproveButton);
         adminRejectButton = findViewById(R.id.adminRejectButton);
 
         int bookId = getIntent().getIntExtra("BOOK_ID", -1);
         BookEntity book = dataHandler.getBookById(bookId);
 
+        String name = book.getName();
         adminAuthorName.setText(book.getUserName());
-        adminAuthorEmail.setText(book.getUserEmail());
+        adminBookName.setText(book.getName());
+        adminBookPrice.setText(book.getPrice() + "VND");
         adminDetailBookContent.setText(book.getContent());
-        adminDetailBookDescription.setText(book.getDescription());
 
         File imgFile = new File(book.getImagePath());
         if (imgFile.exists()) {
