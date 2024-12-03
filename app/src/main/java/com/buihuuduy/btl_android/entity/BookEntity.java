@@ -18,6 +18,7 @@ public class BookEntity
     // DTO
     private String userName;
     private String userEmail;
+    private String categoryName;
 
     public BookEntity( String name, String description, String content, Integer price, Integer status, Integer categoryId, Integer userId, LocalDate createdAt, String imagePath) {
         this.name = name;

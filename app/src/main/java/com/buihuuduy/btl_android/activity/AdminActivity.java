@@ -7,19 +7,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.adapter.AdminBookAdapter;
-import com.buihuuduy.btl_android.common.ShowDialog;
 import com.buihuuduy.btl_android.entity.BookEntity;
 import com.google.android.material.navigation.NavigationView;
-
 import java.util.ArrayList;
 
 public class AdminActivity extends AppCompatActivity {

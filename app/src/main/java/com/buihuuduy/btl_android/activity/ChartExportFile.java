@@ -1,13 +1,10 @@
 package com.buihuuduy.btl_android.activity;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -19,15 +16,9 @@ import com.buihuuduy.btl_android.R;
 import android.app.AlertDialog;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 
-import com.buihuuduy.btl_android.entity.BookEntity;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -37,24 +28,19 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import android.graphics.Bitmap;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
 import android.os.Environment;
-import android.widget.Toast;
 import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-import android.graphics.Color;
 
-public class Chart_Export_File extends AppCompatActivity {
+public class ChartExportFile extends AppCompatActivity {
     private BarChart barChart;
     Button exportExcelBtn;
     Button exportPdfBtn;

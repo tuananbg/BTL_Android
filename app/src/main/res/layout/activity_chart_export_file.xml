@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main"
-    tools:context=".activity.Chart_Export_File">
+    tools:context=".activity.ChartExportFile">
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/barChart"

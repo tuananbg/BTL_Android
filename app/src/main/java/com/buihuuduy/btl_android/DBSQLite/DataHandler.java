@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.os.Build;
 import android.util.Log;
 import com.buihuuduy.btl_android.entity.BookEntity;
+import com.buihuuduy.btl_android.entity.CategoryEntity;
 import com.buihuuduy.btl_android.entity.UserEntity;
 import com.github.mikephil.charting.data.BarEntry;
 
@@ -36,10 +37,7 @@ public class DataHandler extends SQLiteOpenHelper {
                     "isAdmin INTEGER" +
                     ");";
 
-    // book status
-    // 0: đang chờ phê duyệt
-    // 1: đã phê duyệt
-    // 2: từ chối
+    // status : 0: waiting,  1: approved, 2: reject
     private static final String CREATE_TABLE_BOOK =
             "create table " + TABLE_BOOK + " (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -71,6 +69,11 @@ public class DataHandler extends SQLiteOpenHelper {
             "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 0, 'Mò kim đáy bể', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
             "('Anh', 'Hello World', 30000,  0, 'Android Studio', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1);";
 
+    private static final String INIT_CATEGORY_LIST =
+            "INSERT INTO category (name) VALUES " +
+            "('Lãng mạn'), ('Kinh dị'), ('Khoa học viễn tưởng'), ('Tôn giáo - Tâm linh'), " +
+            "('Tâm lý - Triết học'), ('Văn học - Lịch sử'), ('Thiếu nhi'), ('Tiểu thuyết'), ('Phát triển bản thân');";
+
     // Constructor
     public DataHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -82,8 +85,9 @@ public class DataHandler extends SQLiteOpenHelper {
             db.execSQL(CREATE_TABLE_USER);
             db.execSQL(CREATE_TABLE_BOOK);
             db.execSQL(CREATE_TABLE_CATEGORY);
-             db.execSQL(INIT_USER);
-             db.execSQL(INIT_BOOK_LIST);
+            db.execSQL(INIT_USER);
+            db.execSQL(INIT_BOOK_LIST);
+            db.execSQL(INIT_CATEGORY_LIST);
         } catch (Exception e) {
             Log.e("DataHandler", "Error creating table: " + e.getMessage());
         }
@@ -162,9 +166,7 @@ public class DataHandler extends SQLiteOpenHelper {
         values.put("image_path", bookEntity.getImagePath());
         values.put("user_id", bookEntity.getUserId());
         values.put("status", 0);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            values.put("created_at", String.valueOf(LocalDate.now()));
-        }
+        values.put("created_at", String.valueOf(LocalDate.now()));
         return db.insert(TABLE_BOOK, null, values);
     }
 
@@ -298,5 +300,33 @@ public class DataHandler extends SQLiteOpenHelper {
 
         // Thực hiện cập nhật và trả về true nếu ít nhất một dòng bị ảnh hưởng
         return statement.executeUpdateDelete() > 0;
+    }
+
+    public List<CategoryEntity> getAllCategory()
+    {
+        List<CategoryEntity> categoryList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_CATEGORY;
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    do {
+                        Integer id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                        String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+
+                        CategoryEntity category = new CategoryEntity(id, name);
+
+                        categoryList.add(category);
+                    } while (cursor.moveToNext());
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+
+        db.close();
+        return categoryList;
     }
 }
