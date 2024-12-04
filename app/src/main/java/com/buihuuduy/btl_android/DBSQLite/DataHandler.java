@@ -280,6 +280,7 @@ public class DataHandler extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             book = new BookEntity();
+            String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
             String content = cursor.getString(cursor.getColumnIndexOrThrow("content"));
             String description = cursor.getString(cursor.getColumnIndexOrThrow("description"));
             int price = cursor.getInt(cursor.getColumnIndexOrThrow("price"));
@@ -287,6 +288,7 @@ public class DataHandler extends SQLiteOpenHelper {
             String username = cursor.getString(cursor.getColumnIndexOrThrow("full_name"));
             String email = cursor.getString(cursor.getColumnIndexOrThrow("email"));
 
+            book.setName(name);
             book.setContent(content);
             book.setDescription(description);
             book.setPrice(price);
