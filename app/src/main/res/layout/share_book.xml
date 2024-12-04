@@ -72,7 +72,7 @@
                 android:drawablePadding="8dp"
                 android:hint="Tên sách"
                 android:padding="8dp"
-                android:textColorHint="@color/black" />
+                android:textColorHint="@color/black_53" />
 
             <EditText
                 android:id="@+id/editTextBookDescriptionSharePage"
@@ -83,7 +83,7 @@
                 android:drawablePadding="8dp"
                 android:hint="Mô tả sách"
                 android:padding="8dp"
-                android:textColorHint="@color/black" />
+                android:textColorHint="@color/black_53" />
 
             <Spinner
                 android:id="@+id/spinnerBookCategorySharePage"
@@ -129,7 +129,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btnShareBook"
+        android:id="@+id/btnSellBook"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_gravity="center"
@@ -137,7 +137,7 @@
         android:layout_weight="1"
         android:background="@drawable/button_background"
         android:backgroundTint="@color/primary"
-        android:text="SHARE NOW"
+        android:text="CHIA SẺ NGAY"
         android:textColor="@color/white"
         android:textSize="14sp" />
 </LinearLayout>

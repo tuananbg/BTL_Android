@@ -7,13 +7,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
-import android.os.Build;
 import android.util.Log;
 import com.buihuuduy.btl_android.entity.BookEntity;
 import com.buihuuduy.btl_android.entity.CategoryEntity;
 import com.buihuuduy.btl_android.entity.UserEntity;
 import com.github.mikephil.charting.data.BarEntry;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +35,7 @@ public class DataHandler extends SQLiteOpenHelper {
                     "isAdmin INTEGER" +
                     ");";
 
-    // status : 0: waiting,  1: approved, 2: reject
+    // status { 0: waiting,  1: approved, 2: reject }
     private static final String CREATE_TABLE_BOOK =
             "create table " + TABLE_BOOK + " (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -60,18 +58,17 @@ public class DataHandler extends SQLiteOpenHelper {
 
     private static final String INIT_USER =
             "INSERT INTO user (email, full_name, password, isAdmin) VALUES " +
-            "('user1', 'User 1', '1234', 0), " +
-            "('admin1', 'Admin 1', '1234', 1);";
+            "('user1', 'First User ', '1234', 0), " +
+            "('admin1', 'Admin', '1234', 1);";
 
     private static final String INIT_BOOK_LIST =
             "INSERT INTO book (name, description, price, status, content, image_path, user_id) VALUES " +
-            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 0, 'Hằng đẳng thức', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
-            "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 0, 'Mò kim đáy bể', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
-            "('Anh', 'Hello World', 30000,  0, 'Android Studio', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1);";
+            "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 0, 'Hằng đẳng thức', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
+            "('Sách Văn', 'Văn và những câu chuyện cổ tích', 25000, 0, 'Mò kim đáy bể', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1);";
 
     private static final String INIT_CATEGORY_LIST =
             "INSERT INTO category (name) VALUES " +
-            "('Lãng mạn'), ('Kinh dị'), ('Khoa học viễn tưởng'), ('Tôn giáo - Tâm linh'), " +
+            "('Lãng mạn'), ('Kinh dị'), ('Khoa học viễn tưởng'), ('Tôn giáo - Tâm linh'), ('Kinh tế - Chính trị'), " +
             "('Tâm lý - Triết học'), ('Văn học - Lịch sử'), ('Thiếu nhi'), ('Tiểu thuyết'), ('Phát triển bản thân');";
 
     // Constructor
@@ -165,6 +162,21 @@ public class DataHandler extends SQLiteOpenHelper {
         values.put("content", bookEntity.getContent());
         values.put("image_path", bookEntity.getImagePath());
         values.put("user_id", bookEntity.getUserId());
+        values.put("category_id", bookEntity.getCategoryId());
+        values.put("status", 0);
+        values.put("created_at", String.valueOf(LocalDate.now()));
+        return db.insert(TABLE_BOOK, null, values);
+    }
+
+    public long sellBook(BookEntity bookEntity) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", bookEntity.getName());
+        values.put("description", bookEntity.getDescription());
+        values.put("price", bookEntity.getPrice());
+        values.put("image_path", bookEntity.getImagePath());
+        values.put("user_id", bookEntity.getUserId());
+        values.put("category_id", bookEntity.getCategoryId());
         values.put("status", 0);
         values.put("created_at", String.valueOf(LocalDate.now()));
         return db.insert(TABLE_BOOK, null, values);
@@ -175,7 +187,8 @@ public class DataHandler extends SQLiteOpenHelper {
         String query = "SELECT b.name, b.description, b.image_path, u.full_name " +
                 "FROM " + TABLE_BOOK + " b " +
                 "JOIN " + TABLE_USER + " u " +
-                "ON b.user_id = u.id";
+                "ON b.user_id = u.id " +
+                "WHERE b.status = 1";
         return db.rawQuery(query, null);
     }
 
@@ -295,8 +308,8 @@ public class DataHandler extends SQLiteOpenHelper {
 
         // Thực thi câu lệnh SQL
         SQLiteStatement statement = db.compileStatement(query);
-        statement.bindLong(1, status);       // Liên kết tham số đầu tiên là status (kiểu int)
-        statement.bindLong(2, id);       // Liên kết tham số thứ hai là bookId
+        statement.bindLong(1, status);
+        statement.bindLong(2, id);
 
         // Thực hiện cập nhật và trả về true nếu ít nhất một dòng bị ảnh hưởng
         return statement.executeUpdateDelete() > 0;

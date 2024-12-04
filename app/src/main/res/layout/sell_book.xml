@@ -36,6 +36,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/black"/>
+
     </LinearLayout>
 
     <LinearLayout
@@ -52,7 +53,6 @@
             android:id="@+id/sellBookImageButton"
             android:layout_width="150dp"
             android:layout_height="180dp"
-            android:layout_marginTop="5dp"
             android:alpha="0.2"
             android:background="@drawable/upload"
             android:contentDescription="Image"
@@ -61,8 +61,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="vertical">
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="120dp"
+            android:orientation="vertical"
+            android:paddingTop="10dp">
 
             <EditText
                 android:id="@+id/editTextBookNameSellPage"
@@ -72,7 +74,7 @@
                 android:drawablePadding="8dp"
                 android:hint="Tên sách"
                 android:padding="8dp"
-                android:textColorHint="@color/black" />
+                android:textColorHint="@color/black_53" />
 
             <EditText
                 android:id="@+id/editTextBookDescriptionSellPage"
@@ -83,7 +85,8 @@
                 android:drawablePadding="8dp"
                 android:hint="Mô tả sách"
                 android:padding="8dp"
-                android:textColorHint="@color/black" />
+                android:textColorHint="@color/black_53" />
+
             <EditText
                 android:id="@+id/editTextBookPriceSellPage"
                 android:layout_width="match_parent"
@@ -107,7 +110,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btnShareBook"
+        android:id="@+id/btnSellBook"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_gravity="center"
@@ -115,7 +118,7 @@
         android:layout_weight="1"
         android:background="@drawable/button_background"
         android:backgroundTint="@color/primary"
-        android:text="SHARE NOW"
+        android:text="ĐĂNG BÁN"
         android:textColor="@color/white"
         android:textSize="14sp" />
 </LinearLayout>

@@ -16,7 +16,7 @@
         android:theme="@style/Theme.BTL_ANDROID"
         tools:targetApi="31">
         <activity
-            android:name=".SellBookActivity"
+            android:name=".activity.SellBookActivity"
             android:exported="false" />
         <activity
             android:name=".activity.ChartExportFile"

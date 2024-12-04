@@ -52,16 +52,17 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
-                if (itemId == R.id.nav_home) {
-                    ShowDialog.showToast(HomeActivity.this, "Home menu clicked");
-                } else if (itemId == R.id.nav_document) {
+                if (itemId == R.id.nav_document) {
                     ShowDialog.showToast(HomeActivity.this, "Document menu clicked");
                 } else if (itemId == R.id.nav_share) {
                     Intent intent = new Intent(HomeActivity.this, ShareBookActivity.class);
-                    startActivity(intent);
-                    finish();
+                    startActivity(intent); finish();
                 } else if (itemId == R.id.nav_sale) {
-                    ShowDialog.showToast(HomeActivity.this, "Sale menu clicked");
+                    Intent intent = new Intent(HomeActivity.this, SellBookActivity.class);
+                    startActivity(intent); finish();
+                } else if (itemId == R.id.nav_logout) {
+                    Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                    startActivity(intent); finish();
                 }
                 drawerLayout.close();
                 return false;

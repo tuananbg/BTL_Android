@@ -55,14 +55,12 @@ public class AdminActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
-                if (itemId == R.id.nav_awaiting_approval) {
-                    Intent intent = new Intent(AdminActivity.this, AdminActivity.class);
-                    startActivity(intent);
-                    finish();
+                if (itemId == R.id.nav_logout) {
+                    Intent intent = new Intent(AdminActivity.this, LoginActivity.class);
+                    startActivity(intent); finish();
                 } else if (itemId == R.id.nav_statistical) {
-                    Intent intent = new Intent(AdminActivity.this, AdminActivity.class);
-                    startActivity(intent);
-                    finish();
+                    Intent intent = new Intent(AdminActivity.this, ChartExportFile.class);
+                    startActivity(intent); finish();
                 }
                 drawerLayout.close();
                 return false;

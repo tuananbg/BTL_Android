@@ -36,7 +36,7 @@
         android:layout_margin="15dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/edittext_background"
-        android:hint="Nhập Username"
+        android:hint="Nhập họ tên"
         android:padding="12dp"
         android:textColor="@color/black"
         android:textColorHint="@color/dark_gray" />
@@ -48,7 +48,7 @@
         android:layout_margin="15dp"
         android:layout_marginBottom="24dp"
         android:background="@drawable/edittext_background"
-        android:hint="Nhập Password"
+        android:hint="Nhập mật khẩu"
         android:inputType="textPassword"
         android:padding="12dp"
         android:textColorHint="@color/dark_gray" />

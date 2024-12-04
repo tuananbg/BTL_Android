@@ -1,7 +1,5 @@
 package com.buihuuduy.btl_android.activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,24 +17,26 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.common.ShowDialog;
 import com.buihuuduy.btl_android.entity.BookEntity;
 import com.buihuuduy.btl_android.entity.CategoryEntity;
 import com.google.android.material.navigation.NavigationView;
-import java.io.BufferedReader;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShareBookActivity extends AppCompatActivity
+public class SellBookActivity extends AppCompatActivity
 {
     // Declare menu component
     private DrawerLayout drawerLayout;
@@ -44,8 +44,8 @@ public class ShareBookActivity extends AppCompatActivity
     private NavigationView navigationView;
 
     // Declare page component
-    private EditText editTextBookName, editTextBookDescription, editTextBookContent;
-    private Button btnShareBook, btnFile;
+    private EditText editTextBookName, editTextBookDescription, editTextBookPrice;
+    private Button btnSellBook;
     private ImageButton imageButtonBookImage;
     private Spinner spinnerBookCategory;
 
@@ -60,7 +60,7 @@ public class ShareBookActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sharebook_sidebar);
+        setContentView(R.layout.sellbook_sidebar);
 
         SharedPreferences sharedPreferences = this.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
         email = sharedPreferences.getString("email", "null");
@@ -81,29 +81,24 @@ public class ShareBookActivity extends AppCompatActivity
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
                 if (itemId == R.id.nav_home) {
-                    Intent intent = new Intent(ShareBookActivity.this, HomeActivity.class);
+                    Intent intent = new Intent(SellBookActivity.this, HomeActivity.class);
                     startActivity(intent); finish();
                 } else if (itemId == R.id.nav_document) {
-                    ShowDialog.showToast(ShareBookActivity.this, "Document menu clicked");
-                } else if (itemId == R.id.nav_sale) {
-                    Intent intent = new Intent(ShareBookActivity.this, SellBookActivity.class);
+                    ShowDialog.showToast(SellBookActivity.this, "Document menu clicked");
+                } else if (itemId == R.id.nav_share) {
+                    Intent intent = new Intent(SellBookActivity.this, ShareBookActivity.class);
                     startActivity(intent); finish();
                 } else if (itemId == R.id.nav_logout) {
-                    Intent intent = new Intent(ShareBookActivity.this, LoginActivity.class);
+                    Intent intent = new Intent(SellBookActivity.this, LoginActivity.class);
                     startActivity(intent); finish();
                 }
                 drawerLayout.close();
                 return false;
             }
         });
-
-        btnShareBook.setOnClickListener(new View.OnClickListener() {
+        btnSellBook.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {handleShareBtn();}
-        });
-        btnFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) { handleFileBtn(); }
+            public void onClick(View view) {handleSellBtn();}
         });
     }
 
@@ -114,13 +109,12 @@ public class ShareBookActivity extends AppCompatActivity
         drawerLayout = findViewById(R.id.sidebar_layout);
         btnToggle = findViewById(R.id.btnToggle);
         navigationView = findViewById(R.id.nav_view);
-        editTextBookName = findViewById(R.id.editTextBookNameSharePage);
-        editTextBookDescription = findViewById(R.id.editTextBookDescriptionSharePage);
-        editTextBookContent = findViewById(R.id.editTextBookContent);
-        imageButtonBookImage = findViewById(R.id.shareBookImageButton);
-        btnShareBook = findViewById(R.id.btnSellBook);
-        btnFile = findViewById(R.id.btnFileSharePage);
-        spinnerBookCategory = findViewById(R.id.spinnerBookCategorySharePage);
+        editTextBookName = findViewById(R.id.editTextBookNameSellPage);
+        editTextBookDescription = findViewById(R.id.editTextBookDescriptionSellPage);
+        editTextBookPrice = findViewById(R.id.editTextBookPriceSellPage);
+        imageButtonBookImage = findViewById(R.id.sellBookImageButton);
+        btnSellBook = findViewById(R.id.btnSellBook);
+        spinnerBookCategory = findViewById(R.id.spinnerBookCategorySellPage);
     }
 
     private void initializeSpinnerBookCategory()
@@ -145,73 +139,38 @@ public class ShareBookActivity extends AppCompatActivity
         public void onNothingSelected(AdapterView<?> adapterView) {}
     }
 
-    private void handleFileBtn()
-    {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(Intent.createChooser(intent, "Chọn file"), 2);
-    }
-
-    private void handleShareBtn()
-    {
-        String bookName = editTextBookName.getText().toString().trim();
-        String bookDescription = editTextBookDescription.getText().toString().trim();
-        String bookContent = editTextBookContent.getText().toString().trim();
-
-        bookEntity.setName(bookName);
-        bookEntity.setDescription(bookDescription);
-        bookEntity.setContent(bookContent);
-        bookEntity.setImagePath(selectedImagePath);
-        bookEntity.setUserId(dataHandler.getUserByEmail(email).getId());
-
-        long result = dataHandler.shareBook(bookEntity);
-        if (result != -1) {
-            ShowDialog.showToast(ShareBookActivity.this, "Chia sẻ sách thành công!");
-        } else {
-            ShowDialog.showToast(ShareBookActivity.this, "Có lỗi xảy ra!");
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && data != null) {
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
             Uri imageUri = data.getData();
-            if(requestCode == 1) {
-                // Save img into local
-                selectedImagePath = saveImageLocally(getRealPathFromURI(imageUri));
-                Bitmap bitmap = BitmapFactory.decodeFile(selectedImagePath);
-                imageButtonBookImage.setImageBitmap(bitmap);
-                imageButtonBookImage.setAlpha(1.0f);
-            }
-            else if(requestCode == 2) {
-                Uri fileUri = data.getData();
-                if (fileUri != null) {
-                    readTextFile(fileUri);
-                }
-            }
+            // Save img into local
+            selectedImagePath = saveImageLocally(getRealPathFromURI(imageUri));
+            Bitmap bitmap = BitmapFactory.decodeFile(selectedImagePath);
+            imageButtonBookImage.setImageBitmap(bitmap);
+            imageButtonBookImage.setAlpha(1.0f);
         }
     }
 
-    /* - - - - <Solve file> - - - - - */
-    private void readTextFile(Uri fileUri) {
-        try {
-            InputStream inputStream = getContentResolver().openInputStream(fileUri);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            StringBuilder stringBuilder = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line).append("\n");
-            }
-            reader.close();
-            editTextBookContent.setText(stringBuilder.toString()); // Hiển thị nội dung vào EditText
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            ShowDialog.showToast(ShareBookActivity.this, "Không thể đọc file TXT!");
+    private void handleSellBtn()
+    {
+        String bookName = editTextBookName.getText().toString().trim();
+        String bookDescription = editTextBookDescription.getText().toString().trim();
+        String bookPrice = editTextBookPrice.getText().toString().trim();
+
+        bookEntity.setName(bookName);
+        bookEntity.setDescription(bookDescription);
+        bookEntity.setPrice(Integer.parseInt(bookPrice));
+        bookEntity.setImagePath(selectedImagePath);
+        bookEntity.setUserId(dataHandler.getUserByEmail(email).getId());
+
+        long result = dataHandler.sellBook(bookEntity);
+        if (result != -1) {
+            ShowDialog.showToast(SellBookActivity.this, "Đăng bán sách thành công!");
+        } else {
+            ShowDialog.showToast(SellBookActivity.this, "Có lỗi xảy ra!");
         }
     }
-    /* - - - - </Solve file> - - - - - */
 
     /* - - - - <Solve image> - - - - - */
     private void pickImageFromGallery() {
@@ -247,4 +206,3 @@ public class ShareBookActivity extends AppCompatActivity
     }
     /* - - - - </Solve image> - - - - - */
 }
-
