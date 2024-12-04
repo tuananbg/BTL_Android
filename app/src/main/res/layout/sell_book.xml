@@ -96,7 +96,7 @@
                 android:drawablePadding="8dp"
                 android:hint="Mức giá"
                 android:padding="8dp"
-                android:textColorHint="@color/black" />
+                android:textColorHint="@color/black_53" />
 
             <Spinner
                 android:id="@+id/spinnerBookCategorySellPage"

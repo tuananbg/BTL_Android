@@ -1,8 +1,11 @@
 package com.buihuuduy.btl_android.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -11,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
+import com.buihuuduy.btl_android.activity.UserDetailBook;
 import com.buihuuduy.btl_android.entity.BookEntity;
 import java.io.File;
 import java.util.List;
@@ -18,7 +22,7 @@ import android.view.LayoutInflater;
 
 public class BookAdapter extends BaseAdapter
 {
-    TextView textViewBookName, textViewDescription, textViewAuthor;
+    TextView textViewBookName, textViewDescription, textViewAuthor, textViewBookPrice;
     ImageView imageViewBook;
     Button btnShowDetail;
 
@@ -48,6 +52,7 @@ public class BookAdapter extends BaseAdapter
     }
 
 
+    @SuppressLint("SetTextI18n")
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
@@ -59,22 +64,33 @@ public class BookAdapter extends BaseAdapter
         textViewDescription = convertView.findViewById(R.id.bookItemDescription);
         imageViewBook = convertView.findViewById(R.id.bookItemImage);
         textViewAuthor = convertView.findViewById(R.id.bookItemAuthor);
+        textViewBookPrice = convertView.findViewById(R.id.bookItemPrice);
+        btnShowDetail = convertView.findViewById(R.id.bookItemBtnShowDetail);
 
         BookEntity book = bookList.get(position);
 
         textViewBookName.setText(book.getName());
         textViewDescription.setText(book.getDescription());
         textViewAuthor.setText(book.getUserName());
+        textViewBookPrice.setText("Giá : " + book.getPrice() + " VND");
 
         File imgFile = new File(book.getImagePath());
         if (imgFile.exists()) {
             Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             imageViewBook.setImageBitmap(bitmap);
         } else {
-            imageViewBook.setImageResource(R.drawable.logo); // Thay bằng ảnh mặc định
+            imageViewBook.setImageResource(R.drawable.logo);
         }
 
-        // xu ly button
+        btnShowDetail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("BookAdapter", "Book ID: " + book.getId());
+                Intent intent = new Intent(context, UserDetailBook.class);
+                intent.putExtra("BOOK_ID_USER", book.getId());
+                context.startActivity(intent);
+            }
+        });
 
         return convertView;
     }

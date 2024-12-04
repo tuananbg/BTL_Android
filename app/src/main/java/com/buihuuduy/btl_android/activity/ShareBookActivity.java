@@ -127,7 +127,6 @@ public class ShareBookActivity extends AppCompatActivity
     {
         ArrayList<String> categoryNameList = new ArrayList<>();
         ArrayAdapter<String> categoryNameAdapter = null;
-        categoryNameList.add("- Chọn thể loại sách -");
         for(CategoryEntity category : categoryList) {
             categoryNameList.add(category.getName());
         }
@@ -167,7 +166,9 @@ public class ShareBookActivity extends AppCompatActivity
 
         long result = dataHandler.shareBook(bookEntity);
         if (result != -1) {
-            ShowDialog.showToast(ShareBookActivity.this, "Chia sẻ sách thành công!");
+            ShowDialog.showToast(ShareBookActivity.this, "Chia sẻ thành công, vui lòng đợi duyệt !");
+            Intent intent = new Intent(ShareBookActivity.this, HomeActivity.class);
+            startActivity(intent); finish();
         } else {
             ShowDialog.showToast(ShareBookActivity.this, "Có lỗi xảy ra!");
         }

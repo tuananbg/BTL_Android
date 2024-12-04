@@ -83,7 +83,7 @@ public class DataHandler extends SQLiteOpenHelper {
             db.execSQL(CREATE_TABLE_BOOK);
             db.execSQL(CREATE_TABLE_CATEGORY);
             db.execSQL(INIT_USER);
-            db.execSQL(INIT_BOOK_LIST);
+            // db.execSQL(INIT_BOOK_LIST);
             db.execSQL(INIT_CATEGORY_LIST);
         } catch (Exception e) {
             Log.e("DataHandler", "Error creating table: " + e.getMessage());
@@ -184,11 +184,11 @@ public class DataHandler extends SQLiteOpenHelper {
 
     public Cursor getAllBooksOnHomePage() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT b.name, b.description, b.image_path, u.full_name " +
+        String query = "SELECT b.id, b.name, b.description, b.image_path, u.full_name " +
                 "FROM " + TABLE_BOOK + " b " +
-                "JOIN " + TABLE_USER + " u " +
-                "ON b.user_id = u.id " +
-                "WHERE b.status = 1";
+                "JOIN " + TABLE_USER + " u ON b.user_id = u.id " +
+                "WHERE b.status = 1 " +
+                "ORDER BY b.id DESC ";
         return db.rawQuery(query, null);
     }
 
@@ -233,9 +233,9 @@ public class DataHandler extends SQLiteOpenHelper {
 
         String query =
                 "SELECT b.*, u.full_name FROM " + TABLE_BOOK + " b " +
-                        "JOIN " + TABLE_USER + " u " +
-                        "ON b.user_id = u.id " +
-                        "WHERE b.status = 0";
+                        "JOIN " + TABLE_USER + " u ON b.user_id = u.id " +
+                        "WHERE b.status = 0 " +
+                        "ORDER BY b.id DESC ";
 
         Cursor cursor = db.rawQuery(query, null);
 
@@ -271,9 +271,9 @@ public class DataHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String query =
-                "SELECT b.*, u.full_name, u.email FROM " + TABLE_BOOK + " b " +
-                        "JOIN " + TABLE_USER + " u " +
-                        "ON b.user_id = u.id " +
+                "SELECT b.*, u.full_name, u.email, c.name AS category_name FROM " + TABLE_BOOK + " b " +
+                        "JOIN " + TABLE_USER + " u ON b.user_id = u.id " +
+                        "JOIN " + TABLE_CATEGORY + " c ON b.category_id = c.id " +
                         "WHERE b.id = " + id;
 
         Cursor cursor = db.rawQuery(query, null);
@@ -287,6 +287,7 @@ public class DataHandler extends SQLiteOpenHelper {
             String imagePath = cursor.getString(cursor.getColumnIndexOrThrow("image_path"));
             String username = cursor.getString(cursor.getColumnIndexOrThrow("full_name"));
             String email = cursor.getString(cursor.getColumnIndexOrThrow("email"));
+            String categoryName = cursor.getString(cursor.getColumnIndexOrThrow("category_name"));
 
             book.setName(name);
             book.setContent(content);
@@ -295,6 +296,7 @@ public class DataHandler extends SQLiteOpenHelper {
             book.setImagePath(imagePath);
             book.setUserName(username);
             book.setUserEmail(email);
+            book.setCategoryName(categoryName);
         }
 
         cursor.close();

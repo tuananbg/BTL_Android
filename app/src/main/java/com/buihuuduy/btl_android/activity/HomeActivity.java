@@ -89,12 +89,14 @@ public class HomeActivity extends AppCompatActivity
         Cursor cursor = dataHandler.getAllBooksOnHomePage();
         if (cursor.moveToFirst()) {
             do {
+                Integer bookId = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
                 String bookName = cursor.getString(cursor.getColumnIndexOrThrow("name"));
                 String bookDescription = cursor.getString(cursor.getColumnIndexOrThrow("description"));
                 String imagePath = cursor.getString(cursor.getColumnIndexOrThrow("image_path"));
                 String username = cursor.getString(cursor.getColumnIndexOrThrow("full_name"));
 
                 BookEntity bookEntity = new BookEntity();
+                bookEntity.setId(bookId);
                 bookEntity.setName(bookName);
                 bookEntity.setDescription(bookDescription);
                 bookEntity.setImagePath(imagePath);

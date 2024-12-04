@@ -1,33 +1,30 @@
 package com.buihuuduy.btl_android.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.entity.BookEntity;
-import com.google.android.material.navigation.NavigationView;
-
 import java.io.File;
 
 public class AdminDetailBook extends AppCompatActivity {
     private ImageView adminBookImage, adminDetailBookBackButton;
-    private TextView adminAuthorName, adminAuthorEmail, adminBookName, adminBookPrice, adminDetailBookContent, adminDetailBookDescription;
+    private TextView adminAuthorName, adminBookName, adminBookPrice, adminBookCategory, adminDetailBookContent;
     private Button adminApproveButton, adminRejectButton;
     private DataHandler dataHandler;
 
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,16 +40,20 @@ public class AdminDetailBook extends AppCompatActivity {
         adminDetailBookContent = findViewById(R.id.adminDetailBookContent);
         adminApproveButton = findViewById(R.id.adminApproveButton);
         adminRejectButton = findViewById(R.id.adminRejectButton);
+        adminBookCategory = findViewById(R.id.adminDetailBookCategory);
 
         int bookId = getIntent().getIntExtra("BOOK_ID", -1);
         BookEntity book = dataHandler.getBookById(bookId);
 
-        String name = book.getName();
         adminAuthorName.setText(book.getUserName());
         adminBookName.setText(book.getName());
-        adminBookPrice.setText(book.getPrice() + "VND");
-        adminDetailBookContent.setText(book.getContent());
-
+        adminBookPrice.setText(book.getPrice() + " VND");
+        adminBookCategory.setText("Thể loại : " + book.getCategoryName());
+        if(book.getContent() != null) adminDetailBookContent.setText(book.getContent());
+        else {
+            adminDetailBookContent.setText("Không truy cập được nội dung");
+            adminDetailBookContent.setTypeface(null, Typeface.ITALIC);
+        }
         File imgFile = new File(book.getImagePath());
         if (imgFile.exists()) {
             Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());

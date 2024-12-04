@@ -34,6 +34,9 @@
             android:name=".activity.AdminDetailBook"
             android:exported="false" />
         <activity
+            android:name=".activity.UserDetailBook"
+            android:exported="false" />
+        <activity
             android:name=".activity.RegisterActivity"
             android:exported="false" />
         <activity

@@ -1,5 +1,8 @@
 package com.buihuuduy.btl_android.activity;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -74,6 +77,14 @@ public class RegisterActivity extends AppCompatActivity {
         UserEntity newUser = new UserEntity(email, fullName, password, 0); // 0 means normal user
         if (registerNewUser(newUser)) {
             onRegisterSuccess();
+            SharedPreferences sharedPreferences = RegisterActivity.this.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("email", email);
+            editor.apply();
+
+            Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
+            startActivity(intent);
+            finish();
         } else {
             onRegisterFailure();
         }
@@ -103,7 +114,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void onRegisterSuccess() {
         ShowDialog.showToast(RegisterActivity.this, "Đăng ký thành công!");
-        finish();  // Close register activity on success
     }
 
     private void onRegisterFailure() {

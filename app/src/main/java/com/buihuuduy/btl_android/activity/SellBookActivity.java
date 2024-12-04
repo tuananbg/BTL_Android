@@ -121,7 +121,6 @@ public class SellBookActivity extends AppCompatActivity
     {
         ArrayList<String> categoryNameList = new ArrayList<>();
         ArrayAdapter<String> categoryNameAdapter = null;
-        categoryNameList.add("- Chọn thể loại sách -");
         for(CategoryEntity category : categoryList) {
             categoryNameList.add(category.getName());
         }
@@ -166,7 +165,9 @@ public class SellBookActivity extends AppCompatActivity
 
         long result = dataHandler.sellBook(bookEntity);
         if (result != -1) {
-            ShowDialog.showToast(SellBookActivity.this, "Đăng bán sách thành công!");
+            ShowDialog.showToast(SellBookActivity.this, "Đăng bán sách thành công, vui lòng đợi duyệt");
+            Intent intent = new Intent(SellBookActivity.this, HomeActivity.class);
+            startActivity(intent); finish();
         } else {
             ShowDialog.showToast(SellBookActivity.this, "Có lỗi xảy ra!");
         }

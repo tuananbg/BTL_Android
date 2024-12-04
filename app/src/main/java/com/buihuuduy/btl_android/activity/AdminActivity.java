@@ -26,7 +26,6 @@ public class AdminActivity extends AppCompatActivity {
     private ArrayList<BookEntity> bookList;
     private AdminBookAdapter adapter;
     private DataHandler dataHandler;
-    private Button bookItemBtnShowDetail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
