@@ -60,10 +60,10 @@ public class DataHandler extends SQLiteOpenHelper {
             "('admin1', 'Admin 1', '1234', 1);";
 
     private static final String INIT_BOOK_LIST =
-            "INSERT INTO book (name, description, price, content, image_path, user_id, category_id) VALUES " +
-            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1, 1), " +
-            "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 'Mò kim đáy bể', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1, 2), " +
-            "('Anh', 'Hello World', 0, 'Android Studio', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1, 3);";
+            "INSERT INTO book (name, description, price, content, image_path, user_id, category_id, status) VALUES " +
+            "('Toán', 'Sách toán và những công thức bổ ích', 20000, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1, 1, 1), " +
+            "('Văn', 'Văn và những câu chuyện cổ tích', 25000, 'Mò kim đáy bể', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1, 2, 0), " +
+            "('Anh', 'Hello World', 0, 'Android Studio', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1, 3, 1);";
 
     private static  final  String INIT_CATE =
             "INSERT INTO category (id, name) VALUES " +
@@ -177,13 +177,13 @@ public class DataHandler extends SQLiteOpenHelper {
                 "ON b.user_id = u.id";
         return db.rawQuery(query, null);
     }
-    public Cursor getAllBookOnMyBook() {
+    public Cursor getAllBookOnMyBook(Integer userId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT b.name, b.description, b.image_path, u.full_name, b.price  " +
+        String query = "SELECT b.name, b.description, b.image_path, u.full_name, b.price, b.status " +
                 "FROM " + TABLE_BOOK + " b " +
                 "JOIN " + TABLE_USER + " u " +
-                "ON b.user_id = u.id";
-        return db.rawQuery(query, null);
+                "ON b.user_id = u.id" + " WHERE u.id = ?";
+        return db.rawQuery(query, new String[]{userId.toString()});
     }
     public Cursor getAllCategories(){
         SQLiteDatabase db = this.getReadableDatabase();

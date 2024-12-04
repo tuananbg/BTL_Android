@@ -1,6 +1,8 @@
 package com.buihuuduy.btl_android.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +29,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.adapter.BookAdapter;
+import com.buihuuduy.btl_android.adapter.MyBookAdapter;
 import com.buihuuduy.btl_android.common.ShowDialog;
 import com.buihuuduy.btl_android.entity.BookEntity;
 import com.buihuuduy.btl_android.entity.CategoryEntity;
@@ -45,17 +48,23 @@ public class MyBookActivity extends AppCompatActivity {
     private Spinner spinnerCategory;
     private DataHandler dataHandler;
     private ListView listView;
-    private BookAdapter adapter;
+    private MyBookAdapter adapter;
     private List<BookEntity> bookList;
+    private String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences sharedPreferences = this.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        email = sharedPreferences.getString("email", "null");
+        Log.e("email: ", email);
+
         setContentView(R.layout.mybook_sidebar);
 
         initializeViews();
 
         getAllBooksOnMyBook();
+
 
         btnToggle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,7 +96,7 @@ public class MyBookActivity extends AppCompatActivity {
                 return false;
             }
         });
-        Button btnFilter = findViewById(R.id.btnFilter);
+        ImageButton btnFilter = findViewById(R.id.btnFilter);
         btnFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,6 +134,7 @@ public class MyBookActivity extends AppCompatActivity {
                 String imagePath = cursor.getString(cursor.getColumnIndexOrThrow("image_path"));
                 String username = cursor.getString(cursor.getColumnIndexOrThrow("full_name"));
                 Integer price = cursor.getInt(cursor.getColumnIndexOrThrow("price"));
+                Integer status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
 
                 BookEntity bookEntity = new BookEntity();
                 bookEntity.setName(bookName);
@@ -132,6 +142,7 @@ public class MyBookActivity extends AppCompatActivity {
                 bookEntity.setImagePath(imagePath);
                 bookEntity.setUserName(username);
                 bookEntity.setPrice(price);
+                bookEntity.setStatus(status);
 
                 bookList.add(bookEntity);
             } while (cursor.moveToNext());
@@ -151,8 +162,24 @@ public class MyBookActivity extends AppCompatActivity {
 
         bookList = new ArrayList<>();
 
-        adapter = new BookAdapter(bookList, dataHandler, this);
+        adapter = new MyBookAdapter(bookList, dataHandler, this);
         listView.setAdapter(adapter);
+
+        // Kiểm tra nếu các CheckBox được chọn
+        CheckBox checkBoxShare = findViewById(R.id.checkBoxShare);
+        CheckBox checkBoxSale = findViewById(R.id.checkBoxSale);
+
+        checkBoxShare.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                checkBoxSale.setChecked(false);
+            }
+        });
+
+        checkBoxSale.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                checkBoxShare.setChecked(false);
+            }
+        });
 
         List<CategoryEntity> categories = getAllCategories();
         ArrayList<String> cateNames =new ArrayList<>();
@@ -182,7 +209,8 @@ public class MyBookActivity extends AppCompatActivity {
 
     private void getAllBooksOnMyBook() {
         bookList.clear();
-        Cursor cursor = dataHandler.getAllBookOnMyBook();
+        Integer userId = dataHandler.getUserByEmail(email).getId();
+        Cursor cursor = dataHandler.getAllBookOnMyBook(userId);
         if (cursor.moveToFirst()) {
             do {
                 String bookName = cursor.getString(cursor.getColumnIndexOrThrow("name"));
@@ -190,6 +218,7 @@ public class MyBookActivity extends AppCompatActivity {
                 String imagePath = cursor.getString(cursor.getColumnIndexOrThrow("image_path"));
                 String username = cursor.getString(cursor.getColumnIndexOrThrow("full_name"));
                 Integer price = cursor.getInt(cursor.getColumnIndexOrThrow("price"));
+                Integer status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
 
                 BookEntity bookEntity = new BookEntity();
                 bookEntity.setName(bookName);
@@ -197,6 +226,7 @@ public class MyBookActivity extends AppCompatActivity {
                 bookEntity.setImagePath(imagePath);
                 bookEntity.setUserName(username);
                 bookEntity.setPrice(price);
+                bookEntity.setStatus(status);
 
                 bookList.add(bookEntity);
             } while (cursor.moveToNext());
