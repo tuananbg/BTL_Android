@@ -1,9 +1,15 @@
 package com.buihuuduy.btl_android.activity;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -21,6 +27,7 @@ import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -37,14 +44,19 @@ import android.Manifest;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class ChartExportFile extends AppCompatActivity {
     private BarChart barChart;
-    Button exportExcelBtn;
-    Button exportPdfBtn;
+    private Button exportExcelBtn;
+    private Button exportPdfBtn;
     private DataHandler dataHandler;
+
+    ArrayList<String> days = new ArrayList<>();
+    ArrayList<String> books = new ArrayList<>();
+    ArrayList<BarEntry> weeklyEntries = new ArrayList<>();
 
     private static final int PERMISSION_REQUEST_CODE = 100;
     @Override
@@ -53,14 +65,12 @@ public class ChartExportFile extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_chart_export_file);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        PERMISSION_REQUEST_CODE
-                );
-            }
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSION_REQUEST_CODE
+            );
         }
 
         dataHandler = new DataHandler(this);
@@ -69,21 +79,21 @@ public class ChartExportFile extends AppCompatActivity {
         exportExcelBtn = findViewById(R.id.exportExcelBtn);
         exportPdfBtn = findViewById(R.id.exportPdfBtn);
 
-        Random random = new Random();
         ArrayList<BarEntry> weeklyEntries1 = dataHandler.getWeeklySalesFromDatabase();;
 
         int numberOfWeeks =  weeklyEntries1.size();
         ArrayList<String> labels = new ArrayList<>();
 
-        ArrayList<BarEntry> weeklyEntries = new ArrayList<>();
         for (int i = 0; i < numberOfWeeks; i++) {
             BarEntry entry = weeklyEntries1.get(i);
             // Sử dụng i làm giá trị x
             weeklyEntries.add(new BarEntry(i, entry.getY()));
         }
 
+        days = dataHandler.getDaysFromDatabase();
+        books = dataHandler.getSellBookListFromDatabase();
         for (int i = 0; i < numberOfWeeks; i++) {
-            labels.add("Tuần " + (i + 1)); // Tạo nhãn: "Tuần 1", "Tuần 2", ...
+            labels.add(days.get(i));
         }
 
         // Tạo BarDataSet
@@ -91,25 +101,29 @@ public class ChartExportFile extends AppCompatActivity {
         barDataSet.setColor(getResources().getColor(R.color.purple_700));
         barDataSet.setValueTextColor(getResources().getColor(R.color.black));
 
-
         // Tùy chỉnh trục X
         XAxis xAxis = barChart.getXAxis();
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels)); // Thiết lập nhãn động
-        xAxis.setGranularity(1f); // Đảm bảo hiển thị mỗi nhãn một cách chính xác
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+        xAxis.setGranularity(1f);
         xAxis.setGranularityEnabled(true);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); // Đặt trục X ở dưới cùng
-        //xAxis.setDrawGridLines(false); // Ẩn lưới
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         barChart.getDescription().setEnabled(false);
+
+        YAxis yAxisLeft = barChart.getAxisLeft();
+        yAxisLeft.setAxisMinimum(0f); // Bắt đầu từ 0
+        YAxis yAxisRight = barChart.getAxisRight();
+        yAxisRight.setGranularityEnabled(true);
+        yAxisRight.setAxisMinimum(0f); // Bắt đầu từ 0
 
         // Tạo BarData và cài đặt vào biểu đồ
         BarData barData = new BarData(barDataSet);
-        barData.setBarWidth(0.5f);  // Điều chỉnh độ rộng của cột
+        barData.setBarWidth(0.5f);
 
         barChart.setData(barData);
-        barChart.invalidate(); // Refresh biểu đồ
+        barChart.invalidate();
 
-        exportExcelBtn.setOnClickListener(v -> exportToExcel(weeklyEntries));
-        exportPdfBtn.setOnClickListener(v -> exportToPdf(weeklyEntries));
+        exportExcelBtn.setOnClickListener(v -> exportToExcel());
+        exportPdfBtn.setOnClickListener(v -> exportToPdf());
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -118,139 +132,74 @@ public class ChartExportFile extends AppCompatActivity {
         });
     }
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == PERMISSION_REQUEST_CODE) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(this, "Đã cấp quyền", Toast.LENGTH_SHORT).show();
-//            } else {
-//                Toast.makeText(this, "Từ chối cấp quyền", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-    public void exportToExcel(ArrayList<BarEntry> weeklyEntries) {
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            if (data != null) {
+                Uri uri = data.getData();
+                saveFileExcelToUri(uri);
+            }
+        }
+        if (requestCode == 2 && resultCode == RESULT_OK) {
+            if (data != null && data.getData() != null) {
+                Uri uri = data.getData();
+                savePdfToUri(uri);
+            }
+        }
+    }
 
-        try {
-            // Tạo workbook mới
+    private void exportToExcel() {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        intent.putExtra(Intent.EXTRA_TITLE, "sales_report.xlsx"); // Tên file mặc định
+        startActivityForResult(intent, 1);
+    }
+
+    private void exportToPdf() {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/pdf");
+        intent.putExtra(Intent.EXTRA_TITLE, "BarChart_" + System.currentTimeMillis() + ".pdf");
+        startActivityForResult(intent, 2);
+    }
+
+    private void saveFileExcelToUri(Uri uri)
+    {
+        try (OutputStream outputStream = getContentResolver().openOutputStream(uri))
+        {
             Workbook workbook = new XSSFWorkbook();
             Sheet sheet = workbook.createSheet("Báo cáo bán hàng");
 
             // Tạo header
             Row headerRow = sheet.createRow(0);
-            headerRow.createCell(0).setCellValue("Tuần");
+            headerRow.createCell(0).setCellValue("Ngày");
             headerRow.createCell(1).setCellValue("Số lượng sách bán");
 
             // Ghi dữ liệu
             for (int i = 0; i < weeklyEntries.size(); i++) {
                 Row row = sheet.createRow(i + 1);
-                row.createCell(0).setCellValue(weeklyEntries.get(i).getX());
+                row.createCell(0).setCellValue(days.get(i));
                 row.createCell(1).setCellValue(weeklyEntries.get(i).getY());
+                row.createCell(2).setCellValue(books.get(i));
             }
 
-            // Kiểm tra và tạo thư mục
-            File directory = Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS);
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
-
-            // Tạo file
-            File file = new File(directory, "sales_report_" + System.currentTimeMillis() + ".xlsx");
-
-            // Ghi file
-            try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            // Ghi dữ liệu vào file
+            if (outputStream != null) {
                 workbook.write(outputStream);
                 workbook.close();
-
-                // Thông báo thành công
-                runOnUiThread(() -> {
-                    Toast.makeText(this,
-                            "Xuất Excel thành công: " + file.getAbsolutePath(),
-                            Toast.LENGTH_LONG).show();
-
-                    // Hiển thị dialog thông báo
-                    new AlertDialog.Builder(this)
-                            .setTitle("Xuất File")
-                            .setMessage("File Excel đã được lưu tại: " + file.getAbsolutePath())
-                            .setPositiveButton("OK", null)
-                            .show();
-                });
+                Toast.makeText(this, "File đã được lưu thành công!", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
-            // Xử lý ngoại lệ
             e.printStackTrace();
-            Log.e("ExportExcel", "Lỗi xuất file", e);
-
-            runOnUiThread(() -> {
-                Toast.makeText(this,
-                        "Lỗi xuất file: " + e.getMessage(),
-                        Toast.LENGTH_LONG).show();
-            });
+            Toast.makeText(this, "Lỗi lưu file: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
-    public void exportToPdf(ArrayList<BarEntry> weeklyEntries) {
-        try {
-            // Tạo tài liệu PDF mới
-            PdfDocument pdfDocument = new PdfDocument();
-            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create();
-            PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+    private void savePdfToUri(Uri uri) {
 
-            // Chuẩn bị vẽ nội dung lên PDF
-            Canvas canvas = page.getCanvas();
-            Paint paint = new Paint();
-            paint.setTextSize(12);
-            canvas.drawText("Báo cáo bán hàng theo tuần", 50, 50, paint);
-
-            int yPosition = 100;
-            for (BarEntry entry : weeklyEntries) {
-                canvas.drawText("Tuần " + (entry.getX() + 1) + ": " + entry.getY() + " cuốn", 50, yPosition, paint);
-                yPosition += 30;
-            }
-
-            pdfDocument.finishPage(page);
-
-            // Tạo thư mục trong DOWNLOADS nếu chưa tồn tại
-            File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
-
-            // Tạo file PDF
-            File file = new File(directory, "sales_report_" + System.currentTimeMillis() + ".pdf");
-
-            // Ghi dữ liệu vào file PDF
-            try (FileOutputStream fileOut = new FileOutputStream(file)) {
-                pdfDocument.writeTo(fileOut);
-
-                // Thông báo thành công
-                runOnUiThread(() -> {
-                    Toast.makeText(this, "Xuất PDF thành công tại: " + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
-
-                    // Hiển thị dialog thông báo
-                    showAlert("Xuất PDF thành công tại: " + file.getAbsolutePath());
-                });
-            }
-            pdfDocument.close();
-        } catch (Exception e) {
-            // Xử lý ngoại lệ
-            e.printStackTrace();
-            Log.e("ExportPDF", "Lỗi xuất file PDF", e);
-
-            runOnUiThread(() -> {
-                Toast.makeText(this, "Lỗi xuất file PDF: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            });
-        }
     }
 
-
-    private void showAlert(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Export to File")
-                .setMessage(message)
-                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                .show();
-    }
 }

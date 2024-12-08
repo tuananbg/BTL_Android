@@ -70,7 +70,6 @@ public class HomeActivity extends AppCompatActivity
         });
     }
 
-
     private void initializeViews()
     {
         drawerLayout = findViewById(R.id.sidebar_layout);
@@ -83,7 +82,6 @@ public class HomeActivity extends AppCompatActivity
         listView.setAdapter(adapter);
     }
 
-
     private void getAllBooksOnHomePage() {
         bookList.clear();
         Cursor cursor = dataHandler.getAllBooksOnHomePage();
@@ -94,6 +92,7 @@ public class HomeActivity extends AppCompatActivity
                 String bookDescription = cursor.getString(cursor.getColumnIndexOrThrow("description"));
                 String imagePath = cursor.getString(cursor.getColumnIndexOrThrow("image_path"));
                 String username = cursor.getString(cursor.getColumnIndexOrThrow("full_name"));
+                Integer price = cursor.getInt(cursor.getColumnIndexOrThrow("price"));
 
                 BookEntity bookEntity = new BookEntity();
                 bookEntity.setId(bookId);
@@ -101,6 +100,7 @@ public class HomeActivity extends AppCompatActivity
                 bookEntity.setDescription(bookDescription);
                 bookEntity.setImagePath(imagePath);
                 bookEntity.setUserName(username);
+                bookEntity.setPrice(price);
 
                 bookList.add(bookEntity);
             } while (cursor.moveToNext());

@@ -62,9 +62,16 @@ public class DataHandler extends SQLiteOpenHelper {
             "('admin1', 'Admin', '1234', 1);";
 
     private static final String INIT_BOOK_LIST =
-            "INSERT INTO book (name, description, price, status, content, image_path, user_id) VALUES " +
-            "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 0, 'Hằng đẳng thức', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1), " +
-            "('Sách Văn', 'Văn và những câu chuyện cổ tích', 25000, 0, 'Mò kim đáy bể', '/data/user/0/com.buihuuduy.btl_android/files/1732587321614_cover.jpg', 1);";
+            "INSERT INTO book (name, description, price, status, content, image_path, user_id, created_at) VALUES " +
+            "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-03'), " +
+                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-03'), " +
+                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-03'), " +
+                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-04'), " +
+                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-04'), " +
+                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-05'), " +
+                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-05'), " +
+                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-05'), " +
+            "('Sách Văn', 'Văn và những câu chuyện cổ tích', 25000, 1, 'Mò kim đáy bể', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-06');";
 
     private static final String INIT_CATEGORY_LIST =
             "INSERT INTO category (name) VALUES " +
@@ -83,7 +90,7 @@ public class DataHandler extends SQLiteOpenHelper {
             db.execSQL(CREATE_TABLE_BOOK);
             db.execSQL(CREATE_TABLE_CATEGORY);
             db.execSQL(INIT_USER);
-            // db.execSQL(INIT_BOOK_LIST);
+            db.execSQL(INIT_BOOK_LIST);
             db.execSQL(INIT_CATEGORY_LIST);
         } catch (Exception e) {
             Log.e("DataHandler", "Error creating table: " + e.getMessage());
@@ -184,7 +191,7 @@ public class DataHandler extends SQLiteOpenHelper {
 
     public Cursor getAllBooksOnHomePage() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT b.id, b.name, b.description, b.image_path, u.full_name " +
+        String query = "SELECT b.id, b.name, b.description, b.price, b.image_path, u.full_name " +
                 "FROM " + TABLE_BOOK + " b " +
                 "JOIN " + TABLE_USER + " u ON b.user_id = u.id " +
                 "WHERE b.status = 1 " +
@@ -197,7 +204,7 @@ public class DataHandler extends SQLiteOpenHelper {
 
         try{
             SQLiteDatabase db = this.getReadableDatabase();
-            String query = "SELECT strftime('%Y-%W', created_at) AS week, " +
+            String query = "SELECT strftime('%Y-%m-%d', created_at) AS week, " +
                     "Count(id) AS total_sales " +
                     "FROM book " +
                     "WHERE status = 1 and price != 0 " + // Chỉ tính những sách bán
@@ -224,6 +231,58 @@ public class DataHandler extends SQLiteOpenHelper {
         }
 
         return weeklyEntries;
+    }
+
+    public ArrayList<String> getDaysFromDatabase()
+    {
+        ArrayList<String> days = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT strftime('%Y-%m-%d', created_at) AS week, " +
+                "Count(id) AS total_sales " +
+                "FROM book " +
+                "WHERE status = 1 and price != 0 " + // Chỉ tính những sách bán
+                "GROUP BY week " +
+                "ORDER BY week ASC";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                @SuppressLint("Range") String day = cursor.getString(cursor.getColumnIndex("week"));
+                days.add(day);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return days;
+    }
+    public ArrayList<String> getSellBookListFromDatabase()
+    {
+        ArrayList<String> books = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT strftime('%Y-%m-%d', created_at) AS week, " +
+                "Count(id) AS total_sales, " +
+                "GROUP_CONCAT(DISTINCT(name)) AS book " +
+                "FROM book " +
+                "WHERE status = 1 and price != 0 " + // Chỉ tính những sách bán
+                "GROUP BY week " +
+                "ORDER BY week ASC";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                @SuppressLint("Range") String book = cursor.getString(cursor.getColumnIndex("book"));
+                books.add(book);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return books;
     }
 
 
