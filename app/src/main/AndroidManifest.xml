@@ -25,7 +25,10 @@
             android:name=".activity.ShareBookActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.MyBookActivity"
+            android:name=".activity.HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.AdminActivity"
             android:exported="false" />
         <activity
             android:name=".activity.AdminDetailBook"
@@ -37,11 +40,9 @@
             android:name=".activity.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.HomeActivity"
-            android:exported="false" />
-        <activity
             android:name=".activity.LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
