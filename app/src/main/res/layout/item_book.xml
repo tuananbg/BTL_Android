@@ -1,0 +1,75 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:background="#FFFFFF"
+    android:elevation="10dp"
+    android:radius="10dp"
+    android:layout_marginBottom="4dp"
+    android:layout_marginTop="4dp"
+    >
+
+    <!-- Hình ảnh sách -->
+    <ImageView
+        android:id="@+id/bookImage"
+        android:layout_width="80dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop"/>
+<!--        android:src="@drawable/ic_book_placeholder" />-->
+
+    <!-- Nội dung thông tin sách -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingStart="8dp">
+
+        <!-- Tiêu đề sách -->
+        <TextView
+            android:id="@+id/bookName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BOOK NAME"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Giá sách -->
+        <TextView
+            android:id="@+id/bookPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20.000 VND"
+            android:textColor="#000000"
+            android:textSize="14sp" />
+
+        <!-- Tác giả -->
+        <TextView
+            android:id="@+id/bookAuthor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Author"
+            android:textColor="#666666"
+            android:textSize="14sp" />
+
+        <!-- Nút Show Detail -->
+        <Button
+            android:id="@+id/showDetailButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/primary_dark"
+            android:text="Show Detail"
+            android:textColor="#FFFFFF"/>
+    </LinearLayout>
+
+    <!-- Ô tròn màu sắc ở góc trên cùng bên phải -->
+    <View
+        android:id="@+id/colorIndicator"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:background="@drawable/circle"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="8dp" />
+</LinearLayout>

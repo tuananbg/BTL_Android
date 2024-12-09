@@ -53,7 +53,9 @@ public class HomeActivity extends AppCompatActivity
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
                 if (itemId == R.id.nav_document) {
-                    ShowDialog.showToast(HomeActivity.this, "Document menu clicked");
+                    Intent intent = new Intent(HomeActivity.this, MyBookActivity.class);
+                    startActivity(intent);
+                    finish();
                 } else if (itemId == R.id.nav_share) {
                     Intent intent = new Intent(HomeActivity.this, ShareBookActivity.class);
                     startActivity(intent); finish();
