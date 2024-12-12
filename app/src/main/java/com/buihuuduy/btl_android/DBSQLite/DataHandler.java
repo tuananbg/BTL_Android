@@ -96,15 +96,9 @@ public class DataHandler extends SQLiteOpenHelper {
             Log.e("DataHandler", "Error creating table: " + e.getMessage());
         }
     }
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-    }
-
-    // Check if email exists in the database
-    public boolean checkEmailExist(SQLiteDatabase db, String email) {
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USER + " WHERE email = ?", new String[]{email});
         boolean exists = cursor.getCount() > 0;
         cursor.close();
         return exists;
@@ -197,6 +191,46 @@ public class DataHandler extends SQLiteOpenHelper {
                 "WHERE b.status = 1 " +
                 "ORDER BY b.id DESC ";
         return db.rawQuery(query, null);
+    }
+    public Cursor getAllBookOnMyBook(Integer userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT b.name, b.description, b.image_path, u.full_name, b.price, b.status " +
+                "FROM " + TABLE_BOOK + " b " +
+                "JOIN " + TABLE_USER + " u " +
+                "ON b.user_id = u.id" + " WHERE u.id = ?";
+        return db.rawQuery(query, new String[]{userId.toString()});
+    }
+    public Cursor getAllCategories(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT c.name, c.id " +
+                "FROM " + TABLE_CATEGORY + " c ";
+        return db.rawQuery(query, null);
+    }
+    public Cursor getFilteredBooks(String categoryName, List<String> filterType) {
+        String query = "SELECT b.*, u.full_name FROM book b " +
+                "JOIN category c ON b.category_id = c.id " +
+                "JOIN user u ON b.user_id = u.id ";
+        // Thêm điều kiện lọc loại tài liệu nếu cần
+        if (!filterType.isEmpty() && filterType.size() != 2) {
+            if(filterType.get(0).contains("Sale")){
+                query += "AND b.price > 0 "; // "type" là cột lưu giá trị "Share" hoặc "Sale"
+            }else{
+                query += "AND b.price = 0 ";
+            }
+
+            if(!categoryName.contains("Tất cả")){
+                query += "WHERE c.name = ?";
+                return getReadableDatabase().rawQuery(query, new String[]{categoryName});
+            }
+            return getReadableDatabase().rawQuery(query, null);
+        }else{
+                if(!categoryName.contains("Tất cả")){
+                    query += "WHERE c.name = ?";
+                    return getReadableDatabase().rawQuery(query, new String[]{categoryName});
+                }
+        }
+
+        return getReadableDatabase().rawQuery(query, null);
     }
 
     public ArrayList<BarEntry> getWeeklySalesFromDatabase() {
