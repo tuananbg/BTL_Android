@@ -1,5 +1,7 @@
 package com.buihuuduy.btl_android.entity;
 
+import androidx.annotation.NonNull;
+
 import java.time.LocalDate;
 
 public class BookEntity
@@ -114,23 +116,6 @@ public class BookEntity
         this.imagePath = imagePath;
     }
 
-    @Override
-    public String toString() {
-        return "BookEntity{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", content='" + content + '\'' +
-                ", price=" + price +
-                ", status=" + status +
-                ", categoryId=" + categoryId +
-                ", userId=" + userId +
-                ", createdAt=" + createdAt +
-                ", imagePath='" + imagePath + '\'' +
-                ", userName='" + userName + '\'' +
-                '}';
-    }
-
     public String getUserName() {
         return userName;
     }
@@ -153,5 +138,23 @@ public class BookEntity
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "BookEntity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", content='" + content + '\'' +
+                ", price=" + price +
+                ", status=" + status +
+                ", categoryId=" + categoryId +
+                ", userId=" + userId +
+                ", createdAt=" + createdAt +
+                ", imagePath='" + imagePath + '\'' +
+                ", userName='" + userName + '\'' +
+                '}';
     }
 }

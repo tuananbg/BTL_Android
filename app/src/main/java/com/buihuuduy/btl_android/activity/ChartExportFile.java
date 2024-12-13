@@ -5,15 +5,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
@@ -23,6 +26,7 @@ import android.app.AlertDialog;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -32,6 +36,7 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.google.android.material.navigation.NavigationView;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -53,6 +58,10 @@ public class ChartExportFile extends AppCompatActivity {
     private Button exportExcelBtn;
     private Button exportPdfBtn;
     private DataHandler dataHandler;
+
+    private DrawerLayout drawerLayout;
+    private ImageButton btnToggle;
+    private NavigationView navigationView;
 
     ArrayList<String> days = new ArrayList<>();
     ArrayList<String> books = new ArrayList<>();
@@ -78,6 +87,29 @@ public class ChartExportFile extends AppCompatActivity {
         barChart = findViewById(R.id.barChart);
         exportExcelBtn = findViewById(R.id.exportExcelBtn);
         exportPdfBtn = findViewById(R.id.exportPdfBtn);
+
+        btnToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.open();
+            }
+        });
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.nav_logout) {
+                    Intent intent = new Intent(ChartExportFile.this, LoginActivity.class);
+                    startActivity(intent); finish();
+                } else if (itemId == R.id.nav_awaiting_approval) {
+                    Intent intent = new Intent(ChartExportFile.this, AdminActivity.class);
+                    startActivity(intent); finish();
+                }
+                drawerLayout.close();
+                return false;
+            }
+        });
 
         ArrayList<BarEntry> weeklyEntries1 = dataHandler.getWeeklySalesFromDatabase();;
 

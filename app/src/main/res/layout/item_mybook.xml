@@ -27,15 +27,31 @@
         android:paddingStart="8dp">
 
         <!-- Tiêu đề sách -->
-        <TextView
-            android:id="@+id/bookName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="BOOK NAME"
-            android:textSize="16sp"
-            android:textStyle="bold" />
 
         <!-- Giá sách -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/bookName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="BOOK NAME"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/colorIndicator"
+                android:layout_width="50dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/circle" />
+        </LinearLayout>
+
+
         <TextView
             android:id="@+id/bookPrice"
             android:layout_width="wrap_content"
@@ -65,11 +81,4 @@
     </LinearLayout>
 
     <!-- Ô tròn màu sắc ở góc trên cùng bên phải -->
-    <View
-        android:id="@+id/colorIndicator"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:background="@drawable/circle"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="8dp" />
 </LinearLayout>

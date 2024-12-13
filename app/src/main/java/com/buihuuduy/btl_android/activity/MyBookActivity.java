@@ -81,8 +81,8 @@ public class MyBookActivity extends AppCompatActivity {
                     Intent intent = new Intent(MyBookActivity.this, HomeActivity.class);
                     startActivity(intent);
                     finish();
-                } else if (itemId == R.id.nav_document) {
-                    Intent intent = new Intent(MyBookActivity.this, MyBookActivity.class);
+                } else if (itemId == R.id.nav_logout) {
+                    Intent intent = new Intent(MyBookActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();
                 } else if (itemId == R.id.nav_share) {

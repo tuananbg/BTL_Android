@@ -90,7 +90,7 @@ public class DataHandler extends SQLiteOpenHelper {
             db.execSQL(CREATE_TABLE_BOOK);
             db.execSQL(CREATE_TABLE_CATEGORY);
             db.execSQL(INIT_USER);
-            db.execSQL(INIT_BOOK_LIST);
+            //db.execSQL(INIT_BOOK_LIST);
             db.execSQL(INIT_CATEGORY_LIST);
         } catch (Exception e) {
             Log.e("DataHandler", "Error creating table: " + e.getMessage());
@@ -98,7 +98,11 @@ public class DataHandler extends SQLiteOpenHelper {
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    }
 
+    // Check if email exists in the database
+    public boolean checkEmailExist(SQLiteDatabase db, String email) {
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USER + " WHERE email = ?", new String[]{email});
         boolean exists = cursor.getCount() > 0;
         cursor.close();
         return exists;

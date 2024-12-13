@@ -75,13 +75,15 @@ public class MyBookAdapter extends BaseAdapter
         textViewBookName.setText(book.getName());
         textViewDescription.setText(book.getDescription());
         textViewAuthor.setText(book.getUserName());
-        textViewPrice.setText("Price: "+book.getPrice());
+        textViewPrice.setText("Price: " + book.getPrice());
 
         GradientDrawable background = (GradientDrawable) colorIndicator.getBackground();
-        if (book.getStatus() != 0) {
-            background.setColor(Color.RED); // Thay đổi màu
-        } else {
+        if (book.getStatus() == 0) {
+            background.setColor(Color.YELLOW); // Thay đổi màu
+        } else if (book.getStatus() == 1) {
             background.setColor(Color.GREEN);
+        } else {
+            background.setColor(Color.RED);
         }
 
 
