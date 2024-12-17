@@ -1,6 +1,7 @@
 package com.buihuuduy.btl_android.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
+import com.buihuuduy.btl_android.activity.UserDetailBook;
 import com.buihuuduy.btl_android.entity.BookEntity;
 
 import java.io.File;
@@ -67,7 +69,7 @@ public class MyBookAdapter extends BaseAdapter
         textViewAuthor = convertView.findViewById(R.id.bookItemAuthor);
         textViewPrice = convertView.findViewById((R.id.bookItemPrice));
         colorIndicator =  convertView.findViewById(R.id.colorIndicator);
-
+        btnShowDetail = convertView.findViewById(R.id.bookItemBtnShowDetail);
         BookEntity book = bookList.get(position);
 
         Log.e("Book: ", book.toString());
@@ -96,7 +98,16 @@ public class MyBookAdapter extends BaseAdapter
         }
 
         // xu ly button
-
+        btnShowDetail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("BookAdapter", "Book ID: " + book.getId());
+                Intent intent = new Intent(context, UserDetailBook.class);
+                intent.putExtra("BOOK_ID_USER", book.getId());
+                intent.putExtra("MY_BOOK_ID_USER", 2);
+                context.startActivity(intent);
+            }
+        });
         return convertView;
     }
 }

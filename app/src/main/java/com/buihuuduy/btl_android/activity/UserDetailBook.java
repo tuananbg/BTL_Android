@@ -38,6 +38,7 @@ public class UserDetailBook extends AppCompatActivity
         userBookCategory = findViewById(R.id.userDetailBookCategory);
 
         int bookId = getIntent().getIntExtra("BOOK_ID_USER", -1);
+        int index = getIntent().getIntExtra("MY_BOOK_ID_USER", -1);
         BookEntity book = dataHandler.getBookById(bookId);
 
         userAuthorName.setText(book.getUserName());
@@ -60,8 +61,13 @@ public class UserDetailBook extends AppCompatActivity
         userDetailBookBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(UserDetailBook.this, HomeActivity.class);
-                UserDetailBook.this.startActivity(intent);
+                if(index == 1){
+                    Intent intent = new Intent(UserDetailBook.this, HomeActivity.class);
+                    UserDetailBook.this.startActivity(intent);
+                }else{
+                    Intent intent = new Intent(UserDetailBook.this, MyBookActivity.class);
+                    UserDetailBook.this.startActivity(intent);
+                }
             }
         });
     }

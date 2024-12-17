@@ -62,16 +62,12 @@ public class DataHandler extends SQLiteOpenHelper {
             "('admin1', 'Admin', '1234', 1);";
 
     private static final String INIT_BOOK_LIST =
-            "INSERT INTO book (name, description, price, status, content, image_path, user_id, created_at) VALUES " +
-            "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-03'), " +
-                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-03'), " +
-                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-03'), " +
-                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-04'), " +
-                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-04'), " +
-                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-05'), " +
-                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-05'), " +
-                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-05'), " +
-            "('Sách Văn', 'Văn và những câu chuyện cổ tích', 25000, 1, 'Mò kim đáy bể', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-06');";
+            "INSERT INTO book (name, description, price, status, content, image_path, user_id, created_at, category_id) VALUES " +
+            "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-03', 1), " +
+                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-03', 2), " +
+                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 2, '2024-12-03', 2), " +
+                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 2, '2024-12-03', 2), " +
+            "('Sách Văn', 'Văn và những câu chuyện cổ tích', 25000, 1, 'Mò kim đáy bể', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-06', 1);";
 
     private static final String INIT_CATEGORY_LIST =
             "INSERT INTO category (name) VALUES " +
@@ -90,8 +86,8 @@ public class DataHandler extends SQLiteOpenHelper {
             db.execSQL(CREATE_TABLE_BOOK);
             db.execSQL(CREATE_TABLE_CATEGORY);
             db.execSQL(INIT_USER);
-            //db.execSQL(INIT_BOOK_LIST);
             db.execSQL(INIT_CATEGORY_LIST);
+            db.execSQL(INIT_BOOK_LIST);
         } catch (Exception e) {
             Log.e("DataHandler", "Error creating table: " + e.getMessage());
         }
@@ -196,9 +192,10 @@ public class DataHandler extends SQLiteOpenHelper {
                 "ORDER BY b.id DESC ";
         return db.rawQuery(query, null);
     }
+    //k
     public Cursor getAllBookOnMyBook(Integer userId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT b.name, b.description, b.image_path, u.full_name, b.price, b.status " +
+        String query = "SELECT b.name, b.description, b.image_path, u.full_name, b.price, b.status, b.id " +
                 "FROM " + TABLE_BOOK + " b " +
                 "JOIN " + TABLE_USER + " u " +
                 "ON b.user_id = u.id" + " WHERE u.id = ?";
@@ -210,31 +207,32 @@ public class DataHandler extends SQLiteOpenHelper {
                 "FROM " + TABLE_CATEGORY + " c ";
         return db.rawQuery(query, null);
     }
-    public Cursor getFilteredBooks(String categoryName, List<String> filterType) {
+    //k
+    public Cursor getFilteredBooks(String categoryName, List<String> filterType, Integer userId) {
         String query = "SELECT b.*, u.full_name FROM book b " +
                 "JOIN category c ON b.category_id = c.id " +
-                "JOIN user u ON b.user_id = u.id ";
-        // Thêm điều kiện lọc loại tài liệu nếu cần
-        if (!filterType.isEmpty() && filterType.size() != 2) {
-            if(filterType.get(0).contains("Sale")){
-                query += "AND b.price > 0 "; // "type" là cột lưu giá trị "Share" hoặc "Sale"
-            }else{
-                query += "AND b.price = 0 ";
-            }
+                "JOIN user u ON b.user_id = u.id " + "WHERE u.id = ?";
 
-            if(!categoryName.contains("Tất cả")){
-                query += "WHERE c.name = ?";
-                return getReadableDatabase().rawQuery(query, new String[]{categoryName});
-            }
-            return getReadableDatabase().rawQuery(query, null);
-        }else{
-                if(!categoryName.contains("Tất cả")){
-                    query += "WHERE c.name = ?";
-                    return getReadableDatabase().rawQuery(query, new String[]{categoryName});
+        if(!categoryName.contains("Tất cả")){
+            if (filterType.size() == 1) {
+                if(filterType.get(0).contains("Sale")){
+                    query += "AND b.price > 0 "; //
+                }else{
+                    query += "AND b.price = 0 ";
                 }
+            }
+            query += "AND c.name = ?";
+            return getReadableDatabase().rawQuery(query, new String[]{userId.toString(), categoryName});
+        }else{
+            if (filterType.size() == 1) {
+                if(filterType.get(0).contains("Sale")){
+                    query += "AND b.price > 0 "; //
+                }else{
+                    query += "AND b.price = 0 ";
+                }
+            }
+            return getReadableDatabase().rawQuery(query, new String[]{userId.toString()});
         }
-
-        return getReadableDatabase().rawQuery(query, null);
     }
 
     public ArrayList<BarEntry> getWeeklySalesFromDatabase() {

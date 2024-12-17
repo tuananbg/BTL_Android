@@ -88,6 +88,7 @@ public class BookAdapter extends BaseAdapter
                 Log.d("BookAdapter", "Book ID: " + book.getId());
                 Intent intent = new Intent(context, UserDetailBook.class);
                 intent.putExtra("BOOK_ID_USER", book.getId());
+                intent.putExtra("MY_BOOK_ID_USER", 1);
                 context.startActivity(intent);
             }
         });
