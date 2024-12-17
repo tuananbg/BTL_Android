@@ -52,6 +52,14 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Random;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.os.Bundle;
+import android.os.Environment;
+import android.widget.Toast;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
 
 public class ChartExportFile extends AppCompatActivity {
     private BarChart barChart;
@@ -88,28 +96,28 @@ public class ChartExportFile extends AppCompatActivity {
         exportExcelBtn = findViewById(R.id.exportExcelBtn);
         exportPdfBtn = findViewById(R.id.exportPdfBtn);
 
-        btnToggle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerLayout.open();
-            }
-        });
+//        btnToggle.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                drawerLayout.open();
+//            }
+//        });
 
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int itemId = item.getItemId();
-                if (itemId == R.id.nav_logout) {
-                    Intent intent = new Intent(ChartExportFile.this, LoginActivity.class);
-                    startActivity(intent); finish();
-                } else if (itemId == R.id.nav_awaiting_approval) {
-                    Intent intent = new Intent(ChartExportFile.this, AdminActivity.class);
-                    startActivity(intent); finish();
-                }
-                drawerLayout.close();
-                return false;
-            }
-        });
+//        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+//            @Override
+//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//                int itemId = item.getItemId();
+//                if (itemId == R.id.nav_logout) {
+//                    Intent intent = new Intent(ChartExportFile.this, LoginActivity.class);
+//                    startActivity(intent); finish();
+//                } else if (itemId == R.id.nav_awaiting_approval) {
+//                    Intent intent = new Intent(ChartExportFile.this, AdminActivity.class);
+//                    startActivity(intent); finish();
+//                }
+//                drawerLayout.close();
+//                return false;
+//            }
+//        });
 
         ArrayList<BarEntry> weeklyEntries1 = dataHandler.getWeeklySalesFromDatabase();;
 
@@ -230,8 +238,44 @@ public class ChartExportFile extends AppCompatActivity {
         }
     }
 
-    private void savePdfToUri(Uri uri) {
+//    private void savePdfToUri(Uri uri) {
+//
+//    }
+private void savePdfToUri(Uri uri) {
+        PdfDocument pdfDocument = new PdfDocument();
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create();
+        PdfDocument.Page page = pdfDocument.startPage(pageInfo);
 
+        Canvas canvas = page.getCanvas();
+
+        barChart.setDrawingCacheEnabled(true);
+        Bitmap chartBitmap = Bitmap.createBitmap(barChart.getWidth(), barChart.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas bitmapCanvas = new Canvas(chartBitmap);
+        barChart.draw(bitmapCanvas);
+
+        float scale = Math.min((float) canvas.getWidth() / chartBitmap.getWidth(),
+                (float) canvas.getHeight() / chartBitmap.getHeight());
+        float x = (canvas.getWidth() - chartBitmap.getWidth() * scale) / 2;
+        float y = (canvas.getHeight() - chartBitmap.getHeight() * scale) / 2;
+
+        canvas.save();
+        canvas.scale(scale, scale, x, y);
+        canvas.drawBitmap(chartBitmap, x, y, null);
+        canvas.restore();
+
+        pdfDocument.finishPage(page);
+
+        try {
+            OutputStream outputStream = getContentResolver().openOutputStream(uri);
+            pdfDocument.writeTo(outputStream);
+            outputStream.close();
+            Toast.makeText(this, "PDF exported successfully", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error while saving PDF: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+        pdfDocument.close();
     }
 
 }
