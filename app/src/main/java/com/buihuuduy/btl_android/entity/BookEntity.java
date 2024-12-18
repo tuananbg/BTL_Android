@@ -1,7 +1,6 @@
 package com.buihuuduy.btl_android.entity;
 
 import androidx.annotation.NonNull;
-
 import java.time.LocalDate;
 
 public class BookEntity

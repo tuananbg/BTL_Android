@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.activity.AdminDetailBook;
 import com.buihuuduy.btl_android.entity.BookEntity;
-
 import java.util.List;
 
 public class AdminBookAdapter extends BookAdapter {

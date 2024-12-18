@@ -8,33 +8,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
-
-import androidx.activity.EdgeToEdge;
+import android.widget.Spinner;;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
-import com.buihuuduy.btl_android.adapter.BookAdapter;
 import com.buihuuduy.btl_android.adapter.MyBookAdapter;
 import com.buihuuduy.btl_android.common.ShowDialog;
 import com.buihuuduy.btl_android.entity.BookEntity;
 import com.buihuuduy.btl_android.entity.CategoryEntity;
 import com.google.android.material.navigation.NavigationView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,7 +82,6 @@ public class MyBookActivity extends AppCompatActivity {
             }
         });
 
-
         //xử lý nút lọc
         btnFilter = findViewById(R.id.btnFilter);
         btnFilter.setOnClickListener(new View.OnClickListener() {
@@ -119,7 +106,6 @@ public class MyBookActivity extends AppCompatActivity {
         adapter = new MyBookAdapter(bookList, dataHandler, this);
         listView.setAdapter(adapter);
         getAllBooksOnMyBook();
-
 
         // Xử lý chọn 1 trong 2 checkbox
         CheckBox checkBoxShare = findViewById(R.id.checkBoxShare);
@@ -157,7 +143,6 @@ public class MyBookActivity extends AppCompatActivity {
         spinnerCategory.setAdapter(adapterCate);
 
     }
-
 
     private void getAllBooksOnMyBook() {
         bookList.clear();
@@ -222,7 +207,6 @@ public class MyBookActivity extends AppCompatActivity {
                 Integer status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
                 Integer id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
 
-
                 BookEntity bookEntity = new BookEntity();
                 bookEntity.setName(bookName);
                 bookEntity.setDescription(bookDescription);
@@ -231,7 +215,6 @@ public class MyBookActivity extends AppCompatActivity {
                 bookEntity.setPrice(price);
                 bookEntity.setStatus(status);
                 bookEntity.setId(id);
-
 
                 bookList.add(bookEntity);
             } while (cursor.moveToNext());

@@ -14,12 +14,10 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.activity.UserDetailBook;
 import com.buihuuduy.btl_android.entity.BookEntity;
-
 import java.io.File;
 import java.util.List;
 
@@ -87,7 +85,6 @@ public class MyBookAdapter extends BaseAdapter
         } else {
             background.setColor(Color.RED);
         }
-
 
         File imgFile = new File(book.getImagePath());
         if (imgFile.exists()) {

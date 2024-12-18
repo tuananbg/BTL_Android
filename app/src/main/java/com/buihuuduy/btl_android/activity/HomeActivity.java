@@ -13,7 +13,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
 import com.buihuuduy.btl_android.adapter.BookAdapter;
-import com.buihuuduy.btl_android.common.ShowDialog;
 import com.buihuuduy.btl_android.entity.BookEntity;
 import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;

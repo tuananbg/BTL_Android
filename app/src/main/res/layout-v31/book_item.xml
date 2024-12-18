@@ -34,12 +34,13 @@
                 android:text="BOOK NAME"
                 android:layout_weight="1"
                 android:textColor="#000000"
+                android:maxLines="1"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
             <View
                 android:id="@+id/colorIndicator"
-                android:layout_width="50dp"
+                android:layout_width="20dp"
                 android:layout_height="16dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/circle" />
@@ -50,6 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:maxLines="3"
             android:text="Description"
             android:textColor="#000000"
             android:textSize="12sp" />

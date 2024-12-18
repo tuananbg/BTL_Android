@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +63,7 @@ public class BookAdapter extends BaseAdapter
 
         textViewBookName = convertView.findViewById(R.id.bookItemName);
         textViewDescription = convertView.findViewById(R.id.bookItemDescription);
+        textViewDescription.setMovementMethod(new ScrollingMovementMethod());
         imageViewBook = convertView.findViewById(R.id.bookItemImage);
         textViewAuthor = convertView.findViewById(R.id.bookItemAuthor);
         textViewBookPrice = convertView.findViewById(R.id.bookItemPrice);

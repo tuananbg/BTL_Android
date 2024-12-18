@@ -1,14 +1,11 @@
 package com.buihuuduy.btl_android.activity;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,18 +14,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.buihuuduy.btl_android.DBSQLite.DataHandler;
 import com.buihuuduy.btl_android.R;
-
-
-import android.app.AlertDialog;
 import android.content.pm.PackageManager;
-import android.os.Build;
-import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.Toast;
-
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -37,29 +27,15 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.material.navigation.NavigationView;
-
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
-import android.os.Environment;
 import android.Manifest;
-
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Random;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.os.Bundle;
-import android.os.Environment;
-import android.widget.Toast;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
 
 public class ChartExportFile extends AppCompatActivity {
     private BarChart barChart;
@@ -80,7 +56,7 @@ public class ChartExportFile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_chart_export_file);
+        setContentView(R.layout.export_sidebar);
 
         if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -90,34 +66,38 @@ public class ChartExportFile extends AppCompatActivity {
             );
         }
 
+        drawerLayout = findViewById(R.id.sidebar_layout);
+        btnToggle = findViewById(R.id.btnToggle);
+        navigationView = findViewById(R.id.nav_view);
         dataHandler = new DataHandler(this);
+
+        btnToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.open();
+            }
+        });
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.nav_awaiting_approval) {
+                    Intent intent = new Intent(ChartExportFile.this, AdminActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else if (itemId == R.id.nav_logout) {
+                    Intent intent = new Intent(ChartExportFile.this, LoginActivity.class);
+                    startActivity(intent); finish();
+                }
+                drawerLayout.close();
+                return false;
+            }
+        });
 
         barChart = findViewById(R.id.barChart);
         exportExcelBtn = findViewById(R.id.exportExcelBtn);
         exportPdfBtn = findViewById(R.id.exportPdfBtn);
-
-//        btnToggle.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                drawerLayout.open();
-//            }
-//        });
-
-//        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-//            @Override
-//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//                int itemId = item.getItemId();
-//                if (itemId == R.id.nav_logout) {
-//                    Intent intent = new Intent(ChartExportFile.this, LoginActivity.class);
-//                    startActivity(intent); finish();
-//                } else if (itemId == R.id.nav_awaiting_approval) {
-//                    Intent intent = new Intent(ChartExportFile.this, AdminActivity.class);
-//                    startActivity(intent); finish();
-//                }
-//                drawerLayout.close();
-//                return false;
-//            }
-//        });
 
         ArrayList<BarEntry> weeklyEntries1 = dataHandler.getWeeklySalesFromDatabase();;
 
@@ -164,12 +144,6 @@ public class ChartExportFile extends AppCompatActivity {
 
         exportExcelBtn.setOnClickListener(v -> exportToExcel());
         exportPdfBtn.setOnClickListener(v -> exportToPdf());
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
     }
 
     @Override
@@ -217,6 +191,7 @@ public class ChartExportFile extends AppCompatActivity {
             Row headerRow = sheet.createRow(0);
             headerRow.createCell(0).setCellValue("Ngày");
             headerRow.createCell(1).setCellValue("Số lượng sách bán");
+            headerRow.createCell(2).setCellValue("Sách được bán");
 
             // Ghi dữ liệu
             for (int i = 0; i < weeklyEntries.size(); i++) {
@@ -238,10 +213,7 @@ public class ChartExportFile extends AppCompatActivity {
         }
     }
 
-//    private void savePdfToUri(Uri uri) {
-//
-//    }
-private void savePdfToUri(Uri uri) {
+    private void savePdfToUri(Uri uri) {
         PdfDocument pdfDocument = new PdfDocument();
         PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create();
         PdfDocument.Page page = pdfDocument.startPage(pageInfo);

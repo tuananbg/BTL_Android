@@ -23,7 +23,6 @@ public class AdminDetailBook extends AppCompatActivity {
     private Button adminApproveButton, adminRejectButton;
     private DataHandler dataHandler;
 
-
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
