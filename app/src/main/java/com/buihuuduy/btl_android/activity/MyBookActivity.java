@@ -237,7 +237,6 @@ public class MyBookActivity extends AppCompatActivity {
             } while (cursor.moveToNext());
         }
         cursor.close();
-
         adapter.notifyDataSetChanged();
     }
 

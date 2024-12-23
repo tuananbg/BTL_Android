@@ -64,10 +64,10 @@ public class DataHandler extends SQLiteOpenHelper {
     private static final String INIT_BOOK_LIST =
             "INSERT INTO book (name, description, price, status, content, image_path, user_id, created_at, category_id) VALUES " +
             "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-03', 1), " +
-                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-03', 2), " +
+                    "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 0, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-03', 2), " +
                     "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 2, '2024-12-03', 2), " +
                     "('Sách Toán', 'Sách toán và những công thức bổ ích', 20000, 1, 'Hằng đẳng thức', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 2, '2024-12-03', 2), " +
-            "('Sách Văn', 'Văn và những câu chuyện cổ tích', 25000, 1, 'Mò kim đáy bể', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-06', 1);";
+            "('Sách Văn', 'Văn và những câu chuyện cổ tích', 25000, 2, 'Mò kim đáy bể', '/data/data/com.buihuuduy.btl_android/files/1733331439563_cover.jpg', 1, '2024-12-06', 1);";
 
     private static final String INIT_CATEGORY_LIST =
             "INSERT INTO category (name) VALUES " +
