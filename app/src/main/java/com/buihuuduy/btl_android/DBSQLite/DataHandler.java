@@ -208,11 +208,11 @@ public class DataHandler extends SQLiteOpenHelper {
                 "FROM " + TABLE_CATEGORY + " c ";
         return db.rawQuery(query, null);
     }
-    //k
+
     public Cursor getFilteredBooks(String categoryName, List<String> filterType, Integer userId) {
         String query = "SELECT b.*, u.full_name FROM book b " +
                 "JOIN category c ON b.category_id = c.id " +
-                "JOIN user u ON b.user_id = u.id " + "WHERE u.id = ?";
+                "JOIN user u ON b.user_id = u.id " + "WHERE u.id = ? ";
 
         if(!categoryName.contains("Tất cả")){
             if (filterType.size() == 1) {
@@ -222,7 +222,7 @@ public class DataHandler extends SQLiteOpenHelper {
                     query += "AND b.price = 0 ";
                 }
             }
-            query += "AND c.name = ?";
+            query += "AND c.name = ? ";
             return getReadableDatabase().rawQuery(query, new String[]{userId.toString(), categoryName});
         }else{
             if (filterType.size() == 1) {
@@ -233,6 +233,33 @@ public class DataHandler extends SQLiteOpenHelper {
                 }
             }
             return getReadableDatabase().rawQuery(query, new String[]{userId.toString()});
+        }
+    }
+
+    public Cursor getFilteredBookOnHomePage(String categoryName, List<String> filterType) {
+        String query = "SELECT b.*, u.full_name FROM book b " +
+                "JOIN category c ON b.category_id = c.id " +
+                "JOIN user u ON b.user_id = u.id " + "WHERE b.status = 1 ";
+
+        if(!categoryName.contains("Tất cả")){
+            if (filterType.size() == 1) {
+                if(filterType.get(0).contains("Sale")){
+                    query += "AND b.price > 0 "; //
+                }else{
+                    query += "AND b.price = 0 ";
+                }
+            }
+            query += "AND c.name = ? ";
+            return getReadableDatabase().rawQuery(query, new String[]{categoryName});
+        }else{
+            if (filterType.size() == 1) {
+                if(filterType.get(0).contains("Sale")){
+                    query += "AND b.price > 0 "; //
+                }else{
+                    query += "AND b.price = 0 ";
+                }
+            }
+            return getReadableDatabase().rawQuery(query, null);
         }
     }
 

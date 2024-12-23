@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.GradientDrawable;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -23,9 +24,10 @@ import android.view.LayoutInflater;
 
 public class BookAdapter extends BaseAdapter
 {
-    TextView textViewBookName, textViewDescription, textViewAuthor, textViewBookPrice;
-    ImageView imageViewBook;
-    Button btnShowDetail;
+    private TextView textViewBookName, textViewDescription, textViewAuthor, textViewBookPrice;
+    private ImageView imageViewBook;
+    private Button btnShowDetail;
+    private View colorIndicator;
 
     private final List<BookEntity> bookList;
     private final DataHandler dataHandler;
@@ -68,6 +70,7 @@ public class BookAdapter extends BaseAdapter
         textViewAuthor = convertView.findViewById(R.id.bookItemAuthor);
         textViewBookPrice = convertView.findViewById(R.id.bookItemPrice);
         btnShowDetail = convertView.findViewById(R.id.bookItemBtnShowDetail);
+        colorIndicator =  convertView.findViewById(R.id.colorIndicator);
 
         BookEntity book = bookList.get(position);
 
@@ -75,6 +78,9 @@ public class BookAdapter extends BaseAdapter
         textViewDescription.setText(book.getDescription());
         textViewAuthor.setText(book.getUserName());
         textViewBookPrice.setText("Giá : " + book.getPrice() + " VND");
+
+        GradientDrawable background = (GradientDrawable) colorIndicator.getBackground();
+        background.setColor(null);
 
         File imgFile = new File(book.getImagePath());
         if (imgFile.exists()) {
